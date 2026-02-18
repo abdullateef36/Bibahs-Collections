@@ -83,7 +83,7 @@ export default function Header() {
         </AnimatePresence>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 sm:h-20 lg:h-24">
+          <div className="flex items-center justify-between h-18 sm:h-22 lg:h-24">
 
             {/* Logo */}
             <motion.div
@@ -95,7 +95,7 @@ export default function Header() {
             >
               <Link href="/" className="flex items-center space-x-2 sm:space-x-3">
                 <motion.div
-                  className="relative w-12 h-12 sm:w-20 sm:h-20 lg:w-20 lg:h-20"
+                  className="relative w-16 h-16 sm:w-22 sm:h-20 lg:w-20 lg:h-20"
                   whileHover={{ rotate: 5 }}
                   transition={{ duration: 0.3 }}
                 >
