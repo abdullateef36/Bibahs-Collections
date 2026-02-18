@@ -20,7 +20,6 @@ const footerLinks = {
   ],
 };
 
-
 const socials = [
   { icon: FaInstagram, label: 'Instagram',  href: '#' },
   { icon: FaXTwitter,  label: 'X (Twitter)', href: '#' },
@@ -36,7 +35,7 @@ const fadeUp = {
 
 export default function Footer() {
   return (
-    <footer className="bg-[#111111] text-white ">
+    <footer className="bg-[#111111] text-white">
 
       {/* Top decorative pink line */}
       <div className="h-px bg-linear-to-r from-transparent via-[#FF9B9B] to-transparent" />
@@ -45,7 +44,7 @@ export default function Footer() {
 
         {/* ── Main grid ── */}
         <motion.div
-          className="pt-16 pb-12 grid grid-cols-1 gap-12 lg:grid-cols-[2fr_1fr_1fr_1fr]"
+          className="pt-12 pb-10 grid grid-cols-1 gap-10 lg:grid-cols-[2fr_1fr_1fr_1fr]"
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, margin: '-80px' }}
@@ -53,7 +52,7 @@ export default function Footer() {
         >
 
           {/* Brand column */}
-          <motion.div variants={fadeUp} className="space-y-6">
+          <motion.div variants={fadeUp} className="space-y-5">
             <h2 className="font-heading text-4xl sm:text-5xl text-white tracking-widest uppercase leading-none">
               Bibah&apos;s<br />
               <span className="text-[#FF9B9B]">Collections</span>
@@ -62,24 +61,6 @@ export default function Footer() {
             <p className="font-body text-white/50 text-sm leading-relaxed max-w-xs">
               Trendy and classy fashion that makes you feel confident, beautiful, and unapologetically yourself.
             </p>
-
-            {/* Newsletter */}
-            <div className="space-y-2">
-              <p className="font-body text-xs text-white/40 uppercase tracking-widest">Stay in the loop</p>
-              <div className="flex items-center gap-0 border border-white/10 rounded-lg overflow-hidden focus-within:border-[#FF9B9B] transition-colors duration-300">
-                <input
-                  type="email"
-                  placeholder="your@email.com"
-                  className="flex-1 bg-transparent px-4 py-3 text-sm font-body text-white placeholder-white/30 outline-none border-none"
-                />
-                <button
-                  className="shrink-0 bg-[#FF9B9B] hover:bg-[#FF7B7B] text-[#111] px-4 py-3 font-body font-bold text-sm transition-colors duration-300 rounded-none shadow-none"
-                  style={{ transform: 'none', boxShadow: 'none' }}
-                >
-                  Join
-                </button>
-              </div>
-            </div>
 
             {/* Socials */}
             <div className="flex items-center gap-5">
@@ -98,44 +79,49 @@ export default function Footer() {
             </div>
           </motion.div>
 
-          {/* Link columns */}
-          {Object.entries(footerLinks).map(([title, links]) => (
-            <motion.div key={title} variants={fadeUp} className="space-y-5">
-              <h3 className="font-heading text-lg text-white tracking-widest uppercase">
-                {title}
-              </h3>
-              <ul className="space-y-3">
-                {links.map(({ label, href }) => (
-                <li key={label}>
-                    <a
-                    href={href}
-                    className="group flex items-center gap-1 font-body text-sm text-white/40 hover:text-[#FF9B9B] transition-colors duration-300"
-                    >
-                    <span>{label}</span>
-                    <ArrowUpRight
-                        size={12}
-                        className="opacity-0 -translate-y-0.5 translate-x-0 group-hover:opacity-100 group-hover:-translate-y-1 group-hover:translate-x-0.5 transition-all duration-300"
-                    />
-                    </a>
-                </li>
-                ))}
-              </ul>
-            </motion.div>
-          ))}
+          {/* Link columns — 2-col grid on mobile, individual cols on desktop */}
+          <motion.div
+            variants={fadeUp}
+            className="grid grid-cols-2 gap-8 lg:contents"
+          >
+            {Object.entries(footerLinks).map(([title, links]) => (
+              <div key={title} className="space-y-4 lg:space-y-5">
+                <h3 className="font-heading text-lg text-white tracking-widest uppercase">
+                  {title}
+                </h3>
+                <ul className="space-y-3">
+                  {links.map(({ label, href }) => (
+                    <li key={label}>
+                      <a
+                        href={href}
+                        className="group flex items-center gap-1 font-body text-sm text-white/40 hover:text-[#FF9B9B] transition-colors duration-300"
+                      >
+                        <span>{label}</span>
+                        <ArrowUpRight
+                          size={12}
+                          className="opacity-0 -translate-y-0.5 translate-x-0 group-hover:opacity-100 group-hover:-translate-y-1 group-hover:translate-x-0.5 transition-all duration-300"
+                        />
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </motion.div>
         </motion.div>
 
         {/* ── Contact strip ── */}
         <motion.div
-          className="py-6 border-t border-white/5 flex flex-wrap gap-6 text-white/30"
+          className="py-5 border-t border-white/5 flex flex-wrap gap-4 text-white/30"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ delay: 0.3 }}
         >
           {[
-            { icon: Mail,    text: 'hello@bibahs.com' },
-            { icon: Phone,   text: '+1 (800) 424-2229' },
-            { icon: MapPin,  text: 'Lagos, Nigeria' },
+            { icon: Mail,   text: 'hello@bibahs.com' },
+            { icon: Phone,  text: '+1 (800) 424-2229' },
+            { icon: MapPin, text: 'Lagos, Nigeria' },
           ].map(({ icon: Icon, text }) => (
             <span key={text} className="flex items-center gap-2 font-body text-xs">
               <Icon size={13} strokeWidth={1.8} className="text-[#FF9B9B]" />
@@ -146,7 +132,7 @@ export default function Footer() {
 
         {/* ── Bottom bar ── */}
         <motion.div
-          className="py-6 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-3"
+          className="py-5 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-3"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}

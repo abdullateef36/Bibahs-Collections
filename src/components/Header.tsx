@@ -82,7 +82,7 @@ export default function Header() {
         </AnimatePresence>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-20 lg:h-24">
+          <div className="flex items-center justify-between h-16 sm:h-20 lg:h-24">
 
             {/* Logo */}
             <motion.div
@@ -92,9 +92,9 @@ export default function Header() {
               transition={{ duration: 0.5, delay: 0.2 }}
               whileHover={{ scale: 1.05 }}
             >
-              <a href="#home" className="flex items-center space-x-3">
+              <a href="#home" className="flex items-center space-x-2 sm:space-x-3">
                 <motion.div
-                  className="relative w-12 h-12 sm:w-14 sm:h-14"
+                  className="relative w-10 h-10 sm:w-14 sm:h-14"
                   whileHover={{ rotate: 5 }}
                   transition={{ duration: 0.3 }}
                 >
@@ -164,23 +164,19 @@ export default function Header() {
                 <IconButton icon={User} label="Profile" />
               </motion.div>
 
-              {/* Mobile: icons + divider + hamburger — all smaller to fit */}
+              {/* Mobile: only cart + wishlist + hamburger */}
               <motion.div
-                className="flex lg:hidden items-center gap-3"
+                className="flex lg:hidden items-center gap-4"
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5, delay: 0.3 }}
               >
-                <MobileTopIcon icon={Search} label="Search" onClick={() => setIsSearchOpen(true)} />
                 <MobileTopIcon icon={Heart} label="Wishlist" badge={3} />
                 <MobileTopIcon icon={ShoppingCart} label="Cart" badge={2} />
-                <MobileTopIcon icon={User} label="Profile" />
 
-                <div className="w-px h-4 bg-white/20 shrink-0" />
-
-                {/* Hamburger — fixed size, won't clip */}
+                {/* Hamburger */}
                 <motion.button
-                  className="shrink-0 text-white hover:text-[#FF9B9B] transition-colors bg-transparent border-none cursor-pointer"
+                  className="shrink-0 text-white hover:text-[#FF9B9B] transition-colors bg-transparent border-none cursor-pointer p-1"
                   onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                   whileTap={{ scale: 0.95 }}
                   aria-label="Toggle menu"
@@ -195,7 +191,7 @@ export default function Header() {
                         transition={{ duration: 0.15 }}
                         className="block"
                       >
-                        <X size={20} strokeWidth={2} />
+                        <X size={22} strokeWidth={2} />
                       </motion.span>
                     ) : (
                       <motion.span
@@ -206,7 +202,7 @@ export default function Header() {
                         transition={{ duration: 0.15 }}
                         className="block"
                       >
-                        <Menu size={20} strokeWidth={2} />
+                        <Menu size={22} strokeWidth={2} />
                       </motion.span>
                     )}
                   </AnimatePresence>
@@ -223,7 +219,7 @@ export default function Header() {
         />
       </motion.header>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu — includes search & profile links */}
       <motion.div
         className="lg:hidden fixed inset-0 z-40 bg-[#1A1A1A]"
         initial={{ x: '100%' }}
@@ -231,7 +227,7 @@ export default function Header() {
         transition={{ type: 'spring', damping: 30, stiffness: 300 }}
       >
         <div className="h-full flex flex-col">
-          <div className="flex items-center justify-between px-6 h-20 border-b border-white/10">
+          <div className="flex items-center justify-between px-6 h-16 sm:h-20 border-b border-white/10">
             <span className="font-heading text-2xl text-white tracking-wide">Menu</span>
             <button
               onClick={() => setIsMobileMenuOpen(false)}
@@ -266,13 +262,38 @@ export default function Header() {
                   {link.name}
                 </motion.a>
               ))}
+
+              {/* Search & Profile in menu */}
+              <div className="pt-4 mt-4 border-t border-white/10 space-y-2">
+                <motion.button
+                  className="w-full flex items-center gap-3 px-4 py-4 rounded-xl font-body text-lg font-semibold text-white hover:text-[#FF9B9B] hover:bg-white/5 transition-all bg-transparent border-none cursor-pointer text-left"
+                  initial={{ opacity: 0, x: 50 }}
+                  animate={{ opacity: isMobileMenuOpen ? 1 : 0, x: isMobileMenuOpen ? 0 : 50 }}
+                  transition={{ delay: 0.05 * navLinks.length }}
+                  onClick={() => { setIsMobileMenuOpen(false); setIsSearchOpen(true); }}
+                >
+                  <Search size={18} strokeWidth={1.8} />
+                  Search
+                </motion.button>
+                <motion.a
+                  href="#profile"
+                  className="flex items-center gap-3 px-4 py-4 rounded-xl font-body text-lg font-semibold text-white hover:text-[#FF9B9B] hover:bg-white/5 transition-all"
+                  initial={{ opacity: 0, x: 50 }}
+                  animate={{ opacity: isMobileMenuOpen ? 1 : 0, x: isMobileMenuOpen ? 0 : 50 }}
+                  transition={{ delay: 0.05 * (navLinks.length + 1) }}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <User size={18} strokeWidth={1.8} />
+                  My Profile
+                </motion.a>
+              </div>
             </div>
           </nav>
         </div>
       </motion.div>
 
       {/* Spacer */}
-      <div className="h-20 lg:h-24" />
+      <div className="h-16 sm:h-20 lg:h-24" />
     </>
   );
 }
@@ -324,9 +345,9 @@ function MobileTopIcon({
       aria-label={label}
       onClick={onClick}
     >
-      <Icon size={18} strokeWidth={1.8} />
+      <Icon size={20} strokeWidth={1.8} />
       {badge && (
-        <span className="absolute -top-1 -right-1 bg-[#FF9B9B] text-[#1A1A1A] text-[8px] font-bold rounded-full w-3 h-3 flex items-center justify-center leading-none">
+        <span className="absolute -top-1 -right-1 bg-[#FF9B9B] text-[#1A1A1A] text-[9px] font-bold rounded-full w-3.5 h-3.5 flex items-center justify-center leading-none">
           {badge}
         </span>
       )}
