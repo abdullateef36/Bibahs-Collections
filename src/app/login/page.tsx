@@ -4,8 +4,6 @@ import { useState } from 'react';
 import { auth } from '@/lib/firebase';
 import {
   signInWithEmailAndPassword,
-  GoogleAuthProvider,
-  signInWithPopup,
   sendPasswordResetEmail,
 } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
@@ -25,24 +23,11 @@ const PETALS = Array.from({ length: 12 }, (_, i) => ({
   opacity: 0.04 + Math.random() * 0.06,
 }));
 
-// ─── Google logo SVG ─────────────────────────────────────────────────────────
-function GoogleIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M17.64 9.2045c0-.6381-.0573-1.2518-.1636-1.8409H9v3.4814h4.8436c-.2086 1.125-.8427 2.0782-1.7959 2.7164v2.2581h2.9087C16.6582 14.2527 17.64 11.9455 17.64 9.2045z" fill="#4285F4"/>
-      <path d="M9 18c2.43 0 4.4673-.806 5.9564-2.1805l-2.9087-2.2581c-.8064.54-1.8382.8591-3.0477.8591-2.3436 0-4.3282-1.5836-5.036-3.7105H.9574v2.3318C2.4382 15.9832 5.4818 18 9 18z" fill="#34A853"/>
-      <path d="M3.964 10.71c-.18-.54-.2827-1.1168-.2827-1.71s.1027-1.17.2827-1.71V4.9582H.9574C.3477 6.1732 0 7.5468 0 9s.3477 2.8268.9574 4.0418L3.964 10.71z" fill="#FBBC05"/>
-      <path d="M9 3.5795c1.3214 0 2.5077.4541 3.4405 1.346l2.5813-2.5813C13.4632.8918 11.4259 0 9 0 5.4818 0 2.4382 2.0168.9574 4.9582L3.964 7.29C4.6718 5.1627 6.6564 3.5795 9 3.5795z" fill="#EA4335"/>
-    </svg>
-  );
-}
-
 export default function SignInPage() {
   const [email, setEmail]                       = useState('');
   const [password, setPassword]                 = useState('');
   const [showPassword, setShowPassword]         = useState(false);
   const [loading, setLoading]                   = useState(false);
-  const [googleLoading, setGoogleLoading]       = useState(false);
   const [error, setError]                       = useState('');
   const [resetEmail, setResetEmail]             = useState('');
   const [showReset, setShowReset]               = useState(false);
@@ -80,24 +65,6 @@ export default function SignInPage() {
       }
     } finally {
       setLoading(false);
-    }
-  };
-
-  // ── Google sign-in ───────────────────────────────────────────────────────
-  const handleGoogleSignIn = async () => {
-    setGoogleLoading(true);
-    setError('');
-    try {
-      if (!auth) throw new Error('Service not available.');
-      const provider = new GoogleAuthProvider();
-      await signInWithPopup(auth, provider);
-      router.push('/');
-    } catch (err: unknown) {
-      if (err instanceof Error && !err.message.includes('popup-closed-by-user')) {
-        setError('Google sign-in failed. Please try again.');
-      }
-    } finally {
-      setGoogleLoading(false);
     }
   };
 
@@ -251,7 +218,7 @@ export default function SignInPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   disabled={loading}
                   required
-                  className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-3.5 font-body text-white placeholder-white/25 text-sm focus:outline-none focus:border-[#FF9B9B]/60 focus:bg-white/7 transition-all duration-300 disabled:opacity-50"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl pl-10! pr-4 py-3.5 font-body text-white placeholder-white/25 text-sm focus:outline-none focus:border-[#FF9B9B]/60 focus:bg-white/7 transition-all duration-300 disabled:opacity-50"
                 />
               </div>
             </motion.div>
@@ -282,7 +249,7 @@ export default function SignInPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   disabled={loading}
                   required
-                  className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-12 py-3.5 font-body text-white placeholder-white/25 text-sm focus:outline-none focus:border-[#FF9B9B]/60 focus:bg-white/7 transition-all duration-300 disabled:opacity-50"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl pl-10! pr-12 py-3.5 font-body text-white placeholder-white/25 text-sm focus:outline-none focus:border-[#FF9B9B]/60 focus:bg-white/7 transition-all duration-300 disabled:opacity-50"
                 />
                 <button
                   type="button"
@@ -299,7 +266,7 @@ export default function SignInPage() {
             <motion.div variants={itemVariants} className="pt-2">
               <motion.button
                 type="submit"
-                disabled={loading || googleLoading}
+                disabled={loading}
                 whileHover={!loading ? { scale: 1.02, boxShadow: '0 8px 30px rgba(255,155,155,0.35)' } : {}}
                 whileTap={!loading ? { scale: 0.98 } : {}}
                 className="w-full bg-linear-to-r from-[#FF9B9B] to-[#FFB8B8] text-[#1A1A1A] font-body font-bold text-sm uppercase tracking-widest py-4 rounded-xl shadow-lg shadow-[#FF9B9B]/20 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 group"
@@ -313,37 +280,6 @@ export default function SignInPage() {
                   <>
                     Sign In
                     <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform duration-300" />
-                  </>
-                )}
-              </motion.button>
-            </motion.div>
-
-            {/* Divider */}
-            <motion.div variants={itemVariants} className="flex items-center gap-4 py-1">
-              <div className="flex-1 h-px bg-white/10" />
-              <span className="font-body text-xs text-white/30 uppercase tracking-widest">or</span>
-              <div className="flex-1 h-px bg-white/10" />
-            </motion.div>
-
-            {/* Google */}
-            <motion.div variants={itemVariants}>
-              <motion.button
-                type="button"
-                onClick={handleGoogleSignIn}
-                disabled={loading || googleLoading}
-                whileHover={!googleLoading ? { scale: 1.02, borderColor: 'rgba(255,155,155,0.4)' } : {}}
-                whileTap={!googleLoading ? { scale: 0.98 } : {}}
-                className="w-full bg-white/5 border border-white/10 rounded-xl py-3.5 font-body font-semibold text-sm text-white/80 hover:text-white transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
-              >
-                {googleLoading ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-white/20 border-t-white/60 rounded-full animate-spin" />
-                    Connecting...
-                  </>
-                ) : (
-                  <>
-                    <GoogleIcon />
-                    Continue with Google
                   </>
                 )}
               </motion.button>
@@ -421,7 +357,7 @@ export default function SignInPage() {
                             value={resetEmail}
                             onChange={(e) => setResetEmail(e.target.value)}
                             required
-                            className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-3.5 font-body text-white placeholder-white/25 text-sm focus:outline-none focus:border-[#FF9B9B]/60 transition-all"
+                            className="w-full bg-white/5 border border-white/10 rounded-xl pl-10! pr-4 py-3.5 font-body text-white placeholder-white/25 text-sm focus:outline-none focus:border-[#FF9B9B]/60 transition-all"
                           />
                         </div>
 

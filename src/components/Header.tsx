@@ -162,7 +162,7 @@ export default function Header() {
                 <IconButton icon={Search} label="Search" onClick={() => setIsSearchOpen(true)} />
                 <IconButton icon={Heart} label="Wishlist" badge={3} href="/wishlist" />
                 <IconButton icon={ShoppingCart} label="Cart" badge={2} href="/cart" />
-                <IconButton icon={User} label="Profile" href="/signin" />
+                <IconButton icon={User} label="Profile" href="/login" />
               </motion.div>
 
               {/* Mobile: only cart + wishlist + hamburger */}
@@ -277,7 +277,7 @@ export default function Header() {
                   Search
                 </motion.button>
                 <motion.a
-                  href="/signin"
+                  href="/login"
                   className="flex items-center gap-3 px-4 py-4 rounded-xl font-body text-lg font-semibold text-white hover:text-[#FF9B9B] hover:bg-white/5 transition-all"
                   initial={{ opacity: 0, x: 50 }}
                   animate={{ opacity: isMobileMenuOpen ? 1 : 0, x: isMobileMenuOpen ? 0 : 50 }}
@@ -285,7 +285,7 @@ export default function Header() {
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   <User size={18} strokeWidth={1.8} />
-                  My Profile
+                  Sign In
                 </motion.a>
               </div>
             </div>
