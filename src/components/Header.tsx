@@ -160,9 +160,9 @@ export default function Header() {
                 transition={{ duration: 0.5, delay: 0.3 }}
               >
                 <IconButton icon={Search} label="Search" onClick={() => setIsSearchOpen(true)} />
-                <IconButton icon={Heart} label="Wishlist" badge={3} />
-                <IconButton icon={ShoppingCart} label="Cart" badge={2} />
-                <IconButton icon={User} label="Profile" />
+                <IconButton icon={Heart} label="Wishlist" badge={3} href="/wishlist" />
+                <IconButton icon={ShoppingCart} label="Cart" badge={2} href="/cart" />
+                <IconButton icon={User} label="Profile" href="/signin" />
               </motion.div>
 
               {/* Mobile: only cart + wishlist + hamburger */}
@@ -172,8 +172,8 @@ export default function Header() {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5, delay: 0.3 }}
               >
-                <MobileTopIcon icon={Heart} label="Wishlist" badge={3} />
-                <MobileTopIcon icon={ShoppingCart} label="Cart" badge={2} />
+                <MobileTopIcon icon={Heart} label="Wishlist" badge={3} href="/wishlist" />
+                <MobileTopIcon icon={ShoppingCart} label="Cart" badge={2} href="/cart" />
 
                 {/* Hamburger */}
                 <motion.button
@@ -277,7 +277,7 @@ export default function Header() {
                   Search
                 </motion.button>
                 <motion.a
-                  href="#profile"
+                  href="/signin"
                   className="flex items-center gap-3 px-4 py-4 rounded-xl font-body text-lg font-semibold text-white hover:text-[#FF9B9B] hover:bg-white/5 transition-all"
                   initial={{ opacity: 0, x: 50 }}
                   animate={{ opacity: isMobileMenuOpen ? 1 : 0, x: isMobileMenuOpen ? 0 : 50 }}
@@ -304,12 +304,39 @@ function IconButton({
   label,
   badge,
   onClick,
+  href,
 }: {
   icon: LucideIcon;
   label: string;
   badge?: number;
   onClick?: () => void;
+  href?: string;
 }) {
+  const inner = (
+    <>
+      <Icon size={22} strokeWidth={1.8} />
+      {badge && (
+        <span className="absolute -top-1 -right-1.5 bg-[#FF9B9B] text-[#1A1A1A] text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center leading-none">
+          {badge}
+        </span>
+      )}
+    </>
+  );
+
+  if (href) {
+    return (
+      <motion.div
+        className="relative text-white/80 hover:text-[#FF9B9B] transition-colors"
+        whileHover={{ scale: 1.15 }}
+        whileTap={{ scale: 0.9 }}
+      >
+        <Link href={href} aria-label={label} className="block">
+          {inner}
+        </Link>
+      </motion.div>
+    );
+  }
+
   return (
     <motion.button
       className="relative text-white/80 hover:text-[#FF9B9B] transition-colors bg-transparent border-none cursor-pointer"
@@ -318,12 +345,7 @@ function IconButton({
       aria-label={label}
       onClick={onClick}
     >
-      <Icon size={22} strokeWidth={1.8} />
-      {badge && (
-        <span className="absolute -top-1 -right-1.5 bg-[#FF9B9B] text-[#1A1A1A] text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center leading-none">
-          {badge}
-        </span>
-      )}
+      {inner}
     </motion.button>
   );
 }
@@ -333,12 +355,38 @@ function MobileTopIcon({
   label,
   badge,
   onClick,
+  href,
 }: {
   icon: LucideIcon;
   label: string;
   badge?: number;
   onClick?: () => void;
+  href?: string;
 }) {
+  const inner = (
+    <>
+      <Icon size={20} strokeWidth={1.8} />
+      {badge && (
+        <span className="absolute -top-1 -right-1 bg-[#FF9B9B] text-[#1A1A1A] text-[9px] font-bold rounded-full w-3.5 h-3.5 flex items-center justify-center leading-none">
+          {badge}
+        </span>
+      )}
+    </>
+  );
+
+  if (href) {
+    return (
+      <motion.div
+        className="relative shrink-0 text-white/80 hover:text-[#FF9B9B] transition-colors"
+        whileTap={{ scale: 0.85 }}
+      >
+        <Link href={href} aria-label={label} className="block">
+          {inner}
+        </Link>
+      </motion.div>
+    );
+  }
+
   return (
     <motion.button
       className="relative shrink-0 text-white/80 hover:text-[#FF9B9B] transition-colors bg-transparent border-none cursor-pointer"
@@ -346,12 +394,7 @@ function MobileTopIcon({
       aria-label={label}
       onClick={onClick}
     >
-      <Icon size={20} strokeWidth={1.8} />
-      {badge && (
-        <span className="absolute -top-1 -right-1 bg-[#FF9B9B] text-[#1A1A1A] text-[9px] font-bold rounded-full w-3.5 h-3.5 flex items-center justify-center leading-none">
-          {badge}
-        </span>
-      )}
+      {inner}
     </motion.button>
   );
 }
