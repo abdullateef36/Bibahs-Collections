@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Bebas_Neue, Work_Sans } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
 // Bebas Neue - Bold, fashion-forward headings (used by Nike, Adidas)
 const bebasNeue = Bebas_Neue({
@@ -34,6 +35,7 @@ export default function RootLayout({
       <body className={`${bebasNeue.variable} ${workSans.variable} antialiased`}>
         <Header />
         {children}
+        <Footer />
       </body>
     </html>
   );
