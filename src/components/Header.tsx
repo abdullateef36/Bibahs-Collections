@@ -5,9 +5,10 @@ import { Search, Heart, ShoppingCart, User, Menu, X } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { LucideIcon } from 'lucide-react';
+import Link from 'next/link';
 
 const navLinks = [
-  { name: 'Home', href: '#home' },
+  { name: 'Home', href: '/' },
   { name: 'Shop', href: '#shop' },
   { name: 'New Arrivals', href: '#new' },
   { name: 'About', href: '#about' },
@@ -92,9 +93,9 @@ export default function Header() {
               transition={{ duration: 0.5, delay: 0.2 }}
               whileHover={{ scale: 1.05 }}
             >
-              <a href="#home" className="flex items-center space-x-2 sm:space-x-3">
+              <Link href="/" className="flex items-center space-x-2 sm:space-x-3">
                 <motion.div
-                  className="relative w-10 h-10 sm:w-14 sm:h-14"
+                  className="relative w-12 h-12 sm:w-20 sm:h-20 lg:w-20 lg:h-20"
                   whileHover={{ rotate: 5 }}
                   transition={{ duration: 0.3 }}
                 >
@@ -114,7 +115,7 @@ export default function Header() {
                 >
                   Bibah&apos;s
                 </motion.span>
-              </a>
+              </Link>
             </motion.div>
 
             {/* Desktop Navigation */}
@@ -137,7 +138,7 @@ export default function Header() {
                   {link.name}
                   {activeLink === link.name && (
                     <motion.div
-                      className="absolute -bottom-2 left-0 right-0 h-0.5 bg-gradient-to-r from-[#FF9B9B] to-[#FFB8B8]"
+                      className="absolute -bottom-2 left-0 right-0 h-0.5 bg-linear-to-r from-[#FF9B9B] to-[#FFB8B8]"
                       layoutId="underline"
                       initial={{ opacity: 0, scaleX: 0 }}
                       animate={{ opacity: 1, scaleX: 1 }}
@@ -215,7 +216,7 @@ export default function Header() {
         {/* Gradient border */}
         <motion.div
           style={{ opacity: borderOpacity }}
-          className="h-px bg-gradient-to-r from-transparent via-[#FF9B9B]/50 to-transparent"
+          className="h-px bg-linear-to-r from-transparent via-[#FF9B9B]/50 to-transparent"
         />
       </motion.header>
 
