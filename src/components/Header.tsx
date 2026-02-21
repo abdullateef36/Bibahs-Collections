@@ -187,7 +187,7 @@ export default function Header() {
                       <span className="hidden xl:block">Logout</span>
                     </motion.button>
                   ) : (
-                    <IconButton icon={User} label="Sign In" href="/signin" />
+                    <IconButton icon={User} label="Sign In" href="/login" />
                   )
                 )}
               </motion.div>
@@ -317,7 +317,7 @@ export default function Header() {
                     </motion.button>
                   ) : (
                     <motion.a
-                      href="/signin"
+                      href="/login"
                       className="flex items-center gap-3 px-4 py-4 rounded-xl font-body text-lg font-semibold text-white hover:text-[#FF9B9B] hover:bg-white/5 transition-all"
                       initial={{ opacity: 0, x: 50 }}
                       animate={{ opacity: isMobileMenuOpen ? 1 : 0, x: isMobileMenuOpen ? 0 : 50 }}
