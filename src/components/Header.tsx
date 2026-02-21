@@ -12,11 +12,12 @@ import { useRouter } from 'next/navigation';
 import { useUser } from '@/context/UserContext';
 
 const navLinks = [
-  { name: 'Home', href: '/' },
-  { name: 'Shop', href: '#shop' },
-  { name: 'New Arrivals', href: '#new' },
-  { name: 'About', href: '#about' },
-  { name: 'Contact', href: '#contact' },
+  { name: 'New Arrivals', href: '/new-arrivals' },
+  { name: 'Clothing', href: '/clothing' },
+  { name: 'Jewelry', href: '/jewelry' },
+  { name: 'Bags', href: '/bags' },
+  { name: 'Shoes', href: '/shoes' },
+  { name: 'Perfumes', href: '/perfumes' },
 ];
 
 export default function Header() {
@@ -89,7 +90,7 @@ export default function Header() {
                 />
                 <button
                   onClick={() => setIsSearchOpen(false)}
-                  className="p-2 text-white/60 hover:text-[#FF9B9B] transition-colors shrink-0 bg-transparent border-none cursor-pointer"
+                  className="p-2 text-white/60 hover:text-[#FF9B9B] transition-colors shrink-0 bg-transparent border-none cursor-pointer outline-none focus:outline-none"
                 >
                   <X size={20} strokeWidth={2} />
                 </button>
@@ -170,7 +171,7 @@ export default function Header() {
 
               {/* Desktop icons */}
               <motion.div
-                className="hidden lg:flex items-center gap-3"
+                className="hidden lg:flex items-center gap-1"
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5, delay: 0.3 }}
@@ -185,17 +186,17 @@ export default function Header() {
                     {user ? (
                       <motion.button
                         key="desktop-logout"
-                        className="relative text-white/80 hover:text-[#FF9B9B] transition-colors bg-transparent border-none cursor-pointer"
+                        className="relative text-white/80 hover:text-[#FF9B9B] transition-colors bg-transparent border-none cursor-pointer p-2 outline-none focus:outline-none"
                         onClick={handleLogout}
                         aria-label="Logout"
                         initial={{ opacity: 0, scale: 0.5, rotate: -30 }}
                         animate={{ opacity: 1, scale: 1, rotate: 0 }}
                         exit={{ opacity: 0, scale: 0.5, rotate: 30 }}
                         transition={{ duration: 0.2 }}
-                        whileHover={{ scale: 1.15 }}
+                        whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
                       >
-                        <LogOut size={22} strokeWidth={1.8} />
+                        <LogOut size={26} strokeWidth={1.6} />
                       </motion.button>
                     ) : (
                       <motion.div
@@ -224,7 +225,7 @@ export default function Header() {
 
                 {/* Hamburger */}
                 <motion.button
-                  className="shrink-0 text-white hover:text-[#FF9B9B] transition-colors bg-transparent border-none cursor-pointer p-1"
+                  className="shrink-0 text-white hover:text-[#FF9B9B] transition-colors bg-transparent border-none cursor-pointer p-1 outline-none focus:outline-none"
                   onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                   whileTap={{ scale: 0.95 }}
                   aria-label="Toggle menu"
@@ -279,7 +280,7 @@ export default function Header() {
             <span className="font-heading text-2xl text-white tracking-wide">Menu</span>
             <button
               onClick={() => setIsMobileMenuOpen(false)}
-              className="text-white hover:text-[#FF9B9B] transition-colors bg-transparent border-none cursor-pointer"
+              className="text-white hover:text-[#FF9B9B] transition-colors bg-transparent border-none cursor-pointer outline-none focus:outline-none"
             >
               <X size={24} strokeWidth={2} />
             </button>
@@ -314,7 +315,7 @@ export default function Header() {
               {/* Search & Profile/Logout in menu */}
               <div className="pt-4 mt-4 border-t border-white/10 space-y-2">
                 <motion.button
-                  className="w-full flex items-center gap-3 px-4 py-4 rounded-xl font-body text-lg font-semibold text-white hover:text-[#FF9B9B] hover:bg-white/5 transition-all bg-transparent border-none cursor-pointer text-left"
+                  className="w-full flex items-center gap-3 px-4 py-4 rounded-xl font-body text-lg font-semibold text-white hover:text-[#FF9B9B] hover:bg-white/5 transition-all bg-transparent border-none cursor-pointer text-left outline-none focus:outline-none"
                   initial={{ opacity: 0, x: 50 }}
                   animate={{ opacity: isMobileMenuOpen ? 1 : 0, x: isMobileMenuOpen ? 0 : 50 }}
                   transition={{ delay: 0.05 * navLinks.length }}
@@ -324,11 +325,10 @@ export default function Header() {
                   Search
                 </motion.button>
 
-                {/* ✅ FIX: plain conditonal render, no AnimatePresence opacity fight */}
                 {!loading && (
                   user ? (
                     <motion.button
-                      className="w-full flex items-center gap-3 px-4 py-4 rounded-xl font-body text-lg font-semibold text-white hover:text-[#FF9B9B] hover:bg-white/5 transition-all bg-transparent border-none cursor-pointer text-left"
+                      className="w-full flex items-center gap-3 px-4 py-4 rounded-xl font-body text-lg font-semibold text-white hover:text-[#FF9B9B] hover:bg-white/5 transition-all bg-transparent border-none cursor-pointer text-left outline-none focus:outline-none"
                       animate={{ opacity: isMobileMenuOpen ? 1 : 0, x: isMobileMenuOpen ? 0 : 50 }}
                       transition={{ delay: 0.05 * (navLinks.length + 1) }}
                       onClick={() => { handleLogout(); setIsMobileMenuOpen(false); }}
@@ -376,9 +376,9 @@ function IconButton({
 }) {
   const inner = (
     <>
-      <Icon size={22} strokeWidth={1.8} />
+      <Icon size={26} strokeWidth={1.6} />
       {badge && (
-        <span className="absolute -top-1 -right-1.5 bg-[#FF9B9B] text-[#1A1A1A] text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center leading-none">
+        <span className="absolute -top-1 -right-1 bg-[#FF9B9B] text-[#1A1A1A] text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center leading-none">
           {badge}
         </span>
       )}
@@ -388,11 +388,11 @@ function IconButton({
   if (href) {
     return (
       <motion.div
-        className="relative text-white/80 hover:text-[#FF9B9B] transition-colors"
-        whileHover={{ scale: 1.15 }}
+        className="relative text-white/80 hover:text-[#FF9B9B] transition-colors p-2"
+        whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
       >
-        <Link href={href} aria-label={label} className="block">
+        <Link href={href} aria-label={label} className="block outline-none focus:outline-none">
           {inner}
         </Link>
       </motion.div>
@@ -401,8 +401,8 @@ function IconButton({
 
   return (
     <motion.button
-      className="relative text-white/80 hover:text-[#FF9B9B] transition-colors bg-transparent border-none cursor-pointer"
-      whileHover={{ scale: 1.15 }}
+      className="relative text-white/80 hover:text-[#FF9B9B] transition-colors bg-transparent border-none cursor-pointer p-2 outline-none focus:outline-none"
+      whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 0.9 }}
       aria-label={label}
       onClick={onClick}
@@ -442,7 +442,7 @@ function MobileTopIcon({
         className="relative shrink-0 text-white/80 hover:text-[#FF9B9B] transition-colors"
         whileTap={{ scale: 0.85 }}
       >
-        <Link href={href} aria-label={label} className="block">
+        <Link href={href} aria-label={label} className="block outline-none focus:outline-none">
           {inner}
         </Link>
       </motion.div>
@@ -451,7 +451,7 @@ function MobileTopIcon({
 
   return (
     <motion.button
-      className="relative shrink-0 text-white/80 hover:text-[#FF9B9B] transition-colors bg-transparent border-none cursor-pointer"
+      className="relative shrink-0 text-white/80 hover:text-[#FF9B9B] transition-colors bg-transparent border-none cursor-pointer outline-none focus:outline-none"
       whileTap={{ scale: 0.85 }}
       aria-label={label}
       onClick={onClick}
