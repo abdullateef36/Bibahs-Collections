@@ -24,16 +24,16 @@ const PETALS = Array.from({ length: 12 }, (_, i) => ({
 }));
 
 export default function SignInPage() {
-  const [email, setEmail]                       = useState('');
-  const [password, setPassword]                 = useState('');
-  const [showPassword, setShowPassword]         = useState(false);
-  const [loading, setLoading]                   = useState(false);
-  const [error, setError]                       = useState('');
-  const [resetEmail, setResetEmail]             = useState('');
-  const [showReset, setShowReset]               = useState(false);
-  const [resetSent, setResetSent]               = useState(false);
-  const [resetLoading, setResetLoading]         = useState(false);
-  const [resetError, setResetError]             = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [resetEmail, setResetEmail] = useState('');
+  const [showReset, setShowReset] = useState(false);
+  const [resetSent, setResetSent] = useState(false);
+  const [resetLoading, setResetLoading] = useState(false);
+  const [resetError, setResetError] = useState('');
   const router = useRouter();
 
   // ── Email / password sign-in ─────────────────────────────────────────────
