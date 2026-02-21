@@ -1,14 +1,11 @@
 'use client';
 
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
-import { Search, Heart, ShoppingCart, User, Menu, X, LogOut } from 'lucide-react';
+import { Search, Heart, ShoppingCart, User, Menu, X } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { LucideIcon } from 'lucide-react';
 import Link from 'next/link';
-import { useUser } from '@/context/UserContext';
-import { signOut } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
 
 const navLinks = [
   { name: 'Home', href: '/' },
@@ -24,15 +21,6 @@ export default function Header() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const { scrollY } = useScroll();
-  const { user, loading } = useUser();
-
-  const handleLogout = async () => {
-    try {
-      if (auth) await signOut(auth);
-    } catch (err) {
-      console.error('Logout error:', err);
-    }
-  };
 
   const headerShadow = useTransform(
     scrollY,
@@ -172,24 +160,9 @@ export default function Header() {
                 transition={{ duration: 0.5, delay: 0.3 }}
               >
                 <IconButton icon={Search} label="Search" onClick={() => setIsSearchOpen(true)} />
-                <IconButton icon={Heart} label="Wishlist" badge={3} />
-                <IconButton icon={ShoppingCart} label="Cart" badge={2} />
-                {!loading && (
-                  user ? (
-                    <motion.button
-                      onClick={handleLogout}
-                      className="flex items-center gap-2 text-white/80 hover:text-[#FF9B9B] transition-colors bg-transparent border-none cursor-pointer font-body text-sm font-semibold"
-                      whileHover={{ scale: 1.15 }}
-                      whileTap={{ scale: 0.9 }}
-                      aria-label="Logout"
-                    >
-                      <LogOut size={22} strokeWidth={1.8} />
-                      <span className="hidden xl:block">Logout</span>
-                    </motion.button>
-                  ) : (
-                    <IconButton icon={User} label="Sign In" href="/login" />
-                  )
-                )}
+                <IconButton icon={Heart} label="Wishlist" badge={3} href="/wishlist" />
+                <IconButton icon={ShoppingCart} label="Cart" badge={2} href="/cart" />
+                <IconButton icon={User} label="Profile" href="/login" />
               </motion.div>
 
               {/* Mobile: only cart + wishlist + hamburger */}
@@ -199,8 +172,8 @@ export default function Header() {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5, delay: 0.3 }}
               >
-                <MobileTopIcon icon={Heart} label="Wishlist" badge={3} />
-                <MobileTopIcon icon={ShoppingCart} label="Cart" badge={2} />
+                <MobileTopIcon icon={Heart} label="Wishlist" badge={3} href="/wishlist" />
+                <MobileTopIcon icon={ShoppingCart} label="Cart" badge={2} href="/cart" />
 
                 {/* Hamburger */}
                 <motion.button
@@ -303,32 +276,17 @@ export default function Header() {
                   <Search size={18} strokeWidth={1.8} />
                   Search
                 </motion.button>
-                {!loading && (
-                  user ? (
-                    <motion.button
-                      className="flex items-center gap-3 px-4 py-4 rounded-xl font-body text-lg font-semibold text-white hover:text-[#FF9B9B] hover:bg-white/5 transition-all bg-transparent border-none cursor-pointer text-left w-full"
-                      initial={{ opacity: 0, x: 50 }}
-                      animate={{ opacity: isMobileMenuOpen ? 1 : 0, x: isMobileMenuOpen ? 0 : 50 }}
-                      transition={{ delay: 0.05 * (navLinks.length + 1) }}
-                      onClick={() => { setIsMobileMenuOpen(false); handleLogout(); }}
-                    >
-                      <LogOut size={18} strokeWidth={1.8} />
-                      Logout
-                    </motion.button>
-                  ) : (
-                    <motion.a
-                      href="/login"
-                      className="flex items-center gap-3 px-4 py-4 rounded-xl font-body text-lg font-semibold text-white hover:text-[#FF9B9B] hover:bg-white/5 transition-all"
-                      initial={{ opacity: 0, x: 50 }}
-                      animate={{ opacity: isMobileMenuOpen ? 1 : 0, x: isMobileMenuOpen ? 0 : 50 }}
-                      transition={{ delay: 0.05 * (navLinks.length + 1) }}
-                      onClick={() => setIsMobileMenuOpen(false)}
-                    >
-                      <User size={18} strokeWidth={1.8} />
-                      My Profile
-                    </motion.a>
-                  )
-                )}
+                <motion.a
+                  href="/login"
+                  className="flex items-center gap-3 px-4 py-4 rounded-xl font-body text-lg font-semibold text-white hover:text-[#FF9B9B] hover:bg-white/5 transition-all"
+                  initial={{ opacity: 0, x: 50 }}
+                  animate={{ opacity: isMobileMenuOpen ? 1 : 0, x: isMobileMenuOpen ? 0 : 50 }}
+                  transition={{ delay: 0.05 * (navLinks.length + 1) }}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <User size={18} strokeWidth={1.8} />
+                  Sign In
+                </motion.a>
               </div>
             </div>
           </nav>
@@ -397,12 +355,38 @@ function MobileTopIcon({
   label,
   badge,
   onClick,
+  href,
 }: {
   icon: LucideIcon;
   label: string;
   badge?: number;
   onClick?: () => void;
+  href?: string;
 }) {
+  const inner = (
+    <>
+      <Icon size={20} strokeWidth={1.8} />
+      {badge && (
+        <span className="absolute -top-1 -right-1 bg-[#FF9B9B] text-[#1A1A1A] text-[9px] font-bold rounded-full w-3.5 h-3.5 flex items-center justify-center leading-none">
+          {badge}
+        </span>
+      )}
+    </>
+  );
+
+  if (href) {
+    return (
+      <motion.div
+        className="relative shrink-0 text-white/80 hover:text-[#FF9B9B] transition-colors"
+        whileTap={{ scale: 0.85 }}
+      >
+        <Link href={href} aria-label={label} className="block">
+          {inner}
+        </Link>
+      </motion.div>
+    );
+  }
+
   return (
     <motion.button
       className="relative shrink-0 text-white/80 hover:text-[#FF9B9B] transition-colors bg-transparent border-none cursor-pointer"
@@ -410,12 +394,7 @@ function MobileTopIcon({
       aria-label={label}
       onClick={onClick}
     >
-      <Icon size={20} strokeWidth={1.8} />
-      {badge && (
-        <span className="absolute -top-1 -right-1 bg-[#FF9B9B] text-[#1A1A1A] text-[9px] font-bold rounded-full w-3.5 h-3.5 flex items-center justify-center leading-none">
-          {badge}
-        </span>
-      )}
+      {inner}
     </motion.button>
   );
 }

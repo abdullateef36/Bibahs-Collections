@@ -232,7 +232,7 @@ export default function SignInPage() {
                 <button
                   type="button"
                   onClick={() => { setShowReset(true); setResetEmail(email); }}
-                  className="font-body text-xs text-[#FF9B9B]/70 hover:text-[#FF9B9B] transition-colors bg-transparent border-none p-0 cursor-pointer tracking-wide"
+                  className="font-body text-[10px] sm:text-xs text-[#FF9B9B]/70 hover:text-[#FF9B9B] transition-colors bg-transparent border-none p-0 cursor-pointer tracking-normal sm:tracking-wide"
                 >
                   Forgot password?
                 </button>
