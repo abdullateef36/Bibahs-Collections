@@ -22,16 +22,16 @@ const BLOBS = Array.from({ length: 10 }, (_, i) => ({
 }));
 
 export default function SignupPage() {
-  const [email, setEmail]                           = useState('');
-  const [fullName, setFullName]                     = useState('');
-  const [phoneNumber, setPhoneNumber]               = useState('');
-  const [password, setPassword]                     = useState('');
-  const [gender, setGender]                         = useState<'male' | 'female' | ''>('');
-  const [confirmPassword, setConfirmPassword]       = useState('');
-  const [loading, setLoading]                       = useState(false);
-  const [showPassword, setShowPassword]             = useState(false);
+  const [email, setEmail] = useState('');
+  const [fullName, setFullName] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [password, setPassword] = useState('');
+  const [gender, setGender] = useState<'male' | 'female' | ''>('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [error, setError]                           = useState('');
+  const [error, setError]  = useState('');
   const router = useRouter();
 
   const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -336,7 +336,7 @@ export default function SignupPage() {
             {/* Sign in link */}
             <motion.p variants={itemVariants} className="text-center font-body text-sm text-white/40 pt-1">
               Already have an account?{' '}
-              <Link href="/signin" className="text-[#FF9B9B] font-semibold hover:text-[#FFB8B8] transition-colors">
+              <Link href="/login" className="text-[#FF9B9B] font-semibold hover:text-[#FFB8B8] transition-colors">
                 Sign In
               </Link>
             </motion.p>
