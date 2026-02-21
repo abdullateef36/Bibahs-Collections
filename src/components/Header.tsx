@@ -179,12 +179,12 @@ export default function Header() {
                 <IconButton icon={Heart} label="Wishlist" badge={3} href="/wishlist" />
                 <IconButton icon={ShoppingCart} label="Cart" badge={2} href="/cart" />
 
-                {/* User / Logout icon — swaps on auth state */}
+                {/* User / Logout icon — desktop */}
                 {!loading && (
                   <AnimatePresence mode="wait">
                     {user ? (
                       <motion.button
-                        key="logout"
+                        key="desktop-logout"
                         className="relative text-white/80 hover:text-[#FF9B9B] transition-colors bg-transparent border-none cursor-pointer"
                         onClick={handleLogout}
                         aria-label="Logout"
@@ -199,7 +199,7 @@ export default function Header() {
                       </motion.button>
                     ) : (
                       <motion.div
-                        key="user"
+                        key="desktop-user"
                         initial={{ opacity: 0, scale: 0.5, rotate: 30 }}
                         animate={{ opacity: 1, scale: 1, rotate: 0 }}
                         exit={{ opacity: 0, scale: 0.5, rotate: -30 }}
@@ -212,7 +212,7 @@ export default function Header() {
                 )}
               </motion.div>
 
-              {/* Mobile: only cart + wishlist + hamburger */}
+              {/* Mobile: cart + wishlist + hamburger */}
               <motion.div
                 className="flex lg:hidden items-center gap-4"
                 initial={{ opacity: 0, x: 20 }}
@@ -267,7 +267,7 @@ export default function Header() {
         />
       </motion.header>
 
-      {/* Mobile Menu — includes search & profile/logout links */}
+      {/* Mobile Menu */}
       <motion.div
         className="lg:hidden fixed inset-0 z-40 bg-[#1A1A1A]"
         initial={{ x: '100%' }}
@@ -324,38 +324,30 @@ export default function Header() {
                   Search
                 </motion.button>
 
-                {/* Sign In / Logout — swaps on auth state */}
+                {/* ✅ FIX: plain conditonal render, no AnimatePresence opacity fight */}
                 {!loading && (
-                  <AnimatePresence mode="wait">
-                    {user ? (
-                      <motion.button
-                        key="mobile-logout"
-                        className="w-full flex items-center gap-3 px-4 py-4 rounded-xl font-body text-lg font-semibold text-white hover:text-[#FF9B9B] hover:bg-white/5 transition-all bg-transparent border-none cursor-pointer text-left"
-                        initial={{ opacity: 0, x: 50 }}
-                        animate={{ opacity: isMobileMenuOpen ? 1 : 0, x: isMobileMenuOpen ? 0 : 50 }}
-                        exit={{ opacity: 0, x: 50 }}
-                        transition={{ delay: 0.05 * (navLinks.length + 1) }}
-                        onClick={() => { handleLogout(); setIsMobileMenuOpen(false); }}
-                      >
-                        <LogOut size={18} strokeWidth={1.8} />
-                        Logout
-                      </motion.button>
-                    ) : (
-                      <motion.a
-                        key="mobile-signin"
-                        href="/login"
-                        className="flex items-center gap-3 px-4 py-4 rounded-xl font-body text-lg font-semibold text-white hover:text-[#FF9B9B] hover:bg-white/5 transition-all"
-                        initial={{ opacity: 0, x: 50 }}
-                        animate={{ opacity: isMobileMenuOpen ? 1 : 0, x: isMobileMenuOpen ? 0 : 50 }}
-                        exit={{ opacity: 0, x: 50 }}
-                        transition={{ delay: 0.05 * (navLinks.length + 1) }}
-                        onClick={() => setIsMobileMenuOpen(false)}
-                      >
-                        <User size={18} strokeWidth={1.8} />
-                        Sign In
-                      </motion.a>
-                    )}
-                  </AnimatePresence>
+                  user ? (
+                    <motion.button
+                      className="w-full flex items-center gap-3 px-4 py-4 rounded-xl font-body text-lg font-semibold text-white hover:text-[#FF9B9B] hover:bg-white/5 transition-all bg-transparent border-none cursor-pointer text-left"
+                      animate={{ opacity: isMobileMenuOpen ? 1 : 0, x: isMobileMenuOpen ? 0 : 50 }}
+                      transition={{ delay: 0.05 * (navLinks.length + 1) }}
+                      onClick={() => { handleLogout(); setIsMobileMenuOpen(false); }}
+                    >
+                      <LogOut size={18} strokeWidth={1.8} />
+                      Logout
+                    </motion.button>
+                  ) : (
+                    <motion.a
+                      href="/login"
+                      className="flex items-center gap-3 px-4 py-4 rounded-xl font-body text-lg font-semibold text-white hover:text-[#FF9B9B] hover:bg-white/5 transition-all"
+                      animate={{ opacity: isMobileMenuOpen ? 1 : 0, x: isMobileMenuOpen ? 0 : 50 }}
+                      transition={{ delay: 0.05 * (navLinks.length + 1) }}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      <User size={18} strokeWidth={1.8} />
+                      Sign In
+                    </motion.a>
+                  )
                 )}
               </div>
             </div>
