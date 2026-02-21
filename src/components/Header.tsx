@@ -1,11 +1,15 @@
 'use client';
 
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
-import { Search, Heart, ShoppingCart, User, Menu, X } from 'lucide-react';
+import { Search, Heart, ShoppingCart, User, Menu, X, LogOut } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { LucideIcon } from 'lucide-react';
 import Link from 'next/link';
+import { auth } from '@/lib/firebase';
+import { signOut } from 'firebase/auth';
+import { useRouter } from 'next/navigation';
+import { useUser } from '@/context/UserContext';
 
 const navLinks = [
   { name: 'Home', href: '/' },
@@ -21,6 +25,8 @@ export default function Header() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const { scrollY } = useScroll();
+  const { user, loading } = useUser();
+  const router = useRouter();
 
   const headerShadow = useTransform(
     scrollY,
@@ -43,6 +49,16 @@ export default function Header() {
     window.addEventListener('keydown', handleKey);
     return () => window.removeEventListener('keydown', handleKey);
   }, []);
+
+  const handleLogout = async () => {
+    try {
+      if (!auth) return;
+      await signOut(auth);
+      router.push('/');
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
 
   return (
     <>
@@ -162,7 +178,38 @@ export default function Header() {
                 <IconButton icon={Search} label="Search" onClick={() => setIsSearchOpen(true)} />
                 <IconButton icon={Heart} label="Wishlist" badge={3} href="/wishlist" />
                 <IconButton icon={ShoppingCart} label="Cart" badge={2} href="/cart" />
-                <IconButton icon={User} label="Profile" href="/login" />
+
+                {/* User / Logout icon — swaps on auth state */}
+                {!loading && (
+                  <AnimatePresence mode="wait">
+                    {user ? (
+                      <motion.button
+                        key="logout"
+                        className="relative text-white/80 hover:text-[#FF9B9B] transition-colors bg-transparent border-none cursor-pointer"
+                        onClick={handleLogout}
+                        aria-label="Logout"
+                        initial={{ opacity: 0, scale: 0.5, rotate: -30 }}
+                        animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                        exit={{ opacity: 0, scale: 0.5, rotate: 30 }}
+                        transition={{ duration: 0.2 }}
+                        whileHover={{ scale: 1.15 }}
+                        whileTap={{ scale: 0.9 }}
+                      >
+                        <LogOut size={22} strokeWidth={1.8} />
+                      </motion.button>
+                    ) : (
+                      <motion.div
+                        key="user"
+                        initial={{ opacity: 0, scale: 0.5, rotate: 30 }}
+                        animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                        exit={{ opacity: 0, scale: 0.5, rotate: -30 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <IconButton icon={User} label="Profile" href="/login" />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                )}
               </motion.div>
 
               {/* Mobile: only cart + wishlist + hamburger */}
@@ -220,7 +267,7 @@ export default function Header() {
         />
       </motion.header>
 
-      {/* Mobile Menu — includes search & profile links */}
+      {/* Mobile Menu — includes search & profile/logout links */}
       <motion.div
         className="lg:hidden fixed inset-0 z-40 bg-[#1A1A1A]"
         initial={{ x: '100%' }}
@@ -264,7 +311,7 @@ export default function Header() {
                 </motion.a>
               ))}
 
-              {/* Search & Profile in menu */}
+              {/* Search & Profile/Logout in menu */}
               <div className="pt-4 mt-4 border-t border-white/10 space-y-2">
                 <motion.button
                   className="w-full flex items-center gap-3 px-4 py-4 rounded-xl font-body text-lg font-semibold text-white hover:text-[#FF9B9B] hover:bg-white/5 transition-all bg-transparent border-none cursor-pointer text-left"
@@ -276,17 +323,40 @@ export default function Header() {
                   <Search size={18} strokeWidth={1.8} />
                   Search
                 </motion.button>
-                <motion.a
-                  href="/login"
-                  className="flex items-center gap-3 px-4 py-4 rounded-xl font-body text-lg font-semibold text-white hover:text-[#FF9B9B] hover:bg-white/5 transition-all"
-                  initial={{ opacity: 0, x: 50 }}
-                  animate={{ opacity: isMobileMenuOpen ? 1 : 0, x: isMobileMenuOpen ? 0 : 50 }}
-                  transition={{ delay: 0.05 * (navLinks.length + 1) }}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  <User size={18} strokeWidth={1.8} />
-                  Sign In
-                </motion.a>
+
+                {/* Sign In / Logout — swaps on auth state */}
+                {!loading && (
+                  <AnimatePresence mode="wait">
+                    {user ? (
+                      <motion.button
+                        key="mobile-logout"
+                        className="w-full flex items-center gap-3 px-4 py-4 rounded-xl font-body text-lg font-semibold text-white hover:text-[#FF9B9B] hover:bg-white/5 transition-all bg-transparent border-none cursor-pointer text-left"
+                        initial={{ opacity: 0, x: 50 }}
+                        animate={{ opacity: isMobileMenuOpen ? 1 : 0, x: isMobileMenuOpen ? 0 : 50 }}
+                        exit={{ opacity: 0, x: 50 }}
+                        transition={{ delay: 0.05 * (navLinks.length + 1) }}
+                        onClick={() => { handleLogout(); setIsMobileMenuOpen(false); }}
+                      >
+                        <LogOut size={18} strokeWidth={1.8} />
+                        Logout
+                      </motion.button>
+                    ) : (
+                      <motion.a
+                        key="mobile-signin"
+                        href="/login"
+                        className="flex items-center gap-3 px-4 py-4 rounded-xl font-body text-lg font-semibold text-white hover:text-[#FF9B9B] hover:bg-white/5 transition-all"
+                        initial={{ opacity: 0, x: 50 }}
+                        animate={{ opacity: isMobileMenuOpen ? 1 : 0, x: isMobileMenuOpen ? 0 : 50 }}
+                        exit={{ opacity: 0, x: 50 }}
+                        transition={{ delay: 0.05 * (navLinks.length + 1) }}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        <User size={18} strokeWidth={1.8} />
+                        Sign In
+                      </motion.a>
+                    )}
+                  </AnimatePresence>
+                )}
               </div>
             </div>
           </nav>
