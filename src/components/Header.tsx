@@ -2,7 +2,7 @@
 
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import { Search, Heart, ShoppingCart, User, Menu, X, LogOut } from 'lucide-react';
-import { useState, useRef, useEffect, useMemo } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import Image from 'next/image';
 import { LucideIcon } from 'lucide-react';
 import Link from 'next/link';
@@ -10,6 +10,9 @@ import { auth } from '@/lib/firebase';
 import { signOut } from 'firebase/auth';
 import { useRouter, usePathname } from 'next/navigation';
 import { useUser } from '@/context/UserContext';
+import { useCart } from '@/context/CartContext';
+import { useWishlist } from '@/context/WishlistContext';
+import { useNotification } from '@/context/NotificationContext';
 
 const navLinks = [
   { name: 'New Arrivals', href: '/new-arrivals' },
@@ -28,6 +31,9 @@ export default function Header() {
   const { user, loading } = useUser();
   const router = useRouter();
   const pathname = usePathname();
+  const { cartCount } = useCart();
+  const { wishlistCount } = useWishlist();
+  const { current: notification, notify } = useNotification();
 
   // Derive active link directly from pathname — no setState in effect
   const activeLink = useMemo(() => {
@@ -105,7 +111,19 @@ export default function Header() {
           )}
         </AnimatePresence>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+          <AnimatePresence>
+            {notification && (
+              <motion.div
+                className="absolute right-0 top-full mt-2 rounded-full bg-[#FF9B9B]/10 px-4 py-1 text-sm text-[#FF9B9B]"
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+              >
+                {notification.message}
+              </motion.div>
+            )}
+          </AnimatePresence>
           <div className="flex items-center justify-between h-18 sm:h-22 lg:h-24">
 
             {/* Logo */}
@@ -181,9 +199,27 @@ export default function Header() {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5, delay: 0.3 }}
               >
-                <IconButton icon={Search} label="Search" onClick={() => setIsSearchOpen(true)} />
-                <IconButton icon={Heart} label="Wishlist" badge={0} href="/wishlist" />
-                <IconButton icon={ShoppingCart} label="Cart" badge={0} href="/cart" />
+                <IconButton
+                  icon={Search}
+                  label="Search"
+                  onClick={() => {
+                    setIsSearchOpen(true);
+                  }}
+                />
+                <IconButton
+                  icon={Heart}
+                  label="Wishlist"
+                  badge={wishlistCount}
+                  href="/wishlist"
+                  onClick={() => notify("Opened wishlist")}
+                />
+                <IconButton
+                  icon={ShoppingCart}
+                  label="Cart"
+                  badge={cartCount}
+                  href="/cart"
+                  onClick={() => notify("Opened cart")}
+                />
 
                 {/* User / Logout icon — desktop */}
                 {!loading && (
