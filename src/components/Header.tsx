@@ -12,7 +12,7 @@ import { useRouter } from 'next/navigation';
 import { useUser } from '@/context/UserContext';
 
 const navLinks = [
-  { name: 'New Arrivals', href: '/new-arrivals' },
+  { name: 'New Arrivals', href: '/' },
   { name: 'Clothing', href: '/clothing' },
   { name: 'Jewelry', href: '/jewelry' },
   { name: 'Bags', href: '/bags' },

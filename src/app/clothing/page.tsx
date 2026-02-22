@@ -63,7 +63,7 @@ export default function ClothingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0F0F0F] pt-18 sm:pt-22 lg:pt-24">
+    <div className="min-h-screen bg-[#0F0F0F]">
       <div className="relative overflow-hidden border-b border-white/10">
         <div className="absolute inset-0 bg-linear-to-br from-[#FF9B9B]/10 via-transparent to-[#FFB8B8]/10" />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
