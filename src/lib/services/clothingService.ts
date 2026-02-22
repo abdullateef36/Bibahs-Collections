@@ -15,6 +15,7 @@ import {
   DocumentSnapshot,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import { deleteImagesFromCloudinary } from "@/lib/cloudinary";
 import { Clothing, ClothingFormData } from "@/lib/types/clothing";
 
 const CLOTHING_COLLECTION = "clothing";
@@ -46,6 +47,11 @@ export const clothingService = {
     if (!db) throw new Error("Database not initialized");
 
     const clothingRef = doc(db, CLOTHING_COLLECTION, id);
+    const clothingSnap = await getDoc(clothingRef);
+    if (clothingSnap.exists()) {
+      const data = clothingSnap.data() as Clothing;
+      await deleteImagesFromCloudinary(data.images || []);
+    }
     await deleteDoc(clothingRef);
   },
 
