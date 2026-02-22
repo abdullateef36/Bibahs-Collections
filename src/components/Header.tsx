@@ -261,8 +261,8 @@ export default function Header() {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5, delay: 0.3 }}
               >
-                <MobileTopIcon icon={Heart} label="Wishlist" badge={0} href="/wishlist" />
-                <MobileTopIcon icon={ShoppingCart} label="Cart" badge={0} href="/cart" />
+                <MobileTopIcon icon={Heart} label="Wishlist" badge={wishlistCount} href="/wishlist" />
+                <MobileTopIcon icon={ShoppingCart} label="Cart" badge={cartCount} href="/cart" />
 
                 {/* Hamburger */}
                 <motion.button

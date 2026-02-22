@@ -6,8 +6,12 @@ import { FaInstagram, FaTiktok, FaFacebookF, FaYoutube, FaXTwitter } from 'react
 
 const footerLinks = {
   Shop: [
-    { label: 'Shop', href: '/shop' },
-    { label: 'New Arrivals', href: '/shopfilternew' },
+    { label: 'Clothing', href: '/clothing' },
+    { label: 'Jewelry', href: '/jewelry' },
+    { label: 'Bags', href: '/bags' },
+    { label: 'Shoes', href: '/shoes' },
+    { label: 'Jewelry', href: '/jewelry' },
+    { label: 'Perfumes', href: '/perfumes' },
   ],
   Help: [
     { label: 'Shipping & Returns', href: '/shipping-returns' },
