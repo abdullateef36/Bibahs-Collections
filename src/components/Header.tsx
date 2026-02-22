@@ -35,11 +35,18 @@ export default function Header() {
   const { wishlistCount } = useWishlist();
   const { current: notification, notify } = useNotification();
 
-  // Derive active link directly from pathname — no setState in effect
-  const activeLink = useMemo(() => {
-    const match = navLinks.find((link) => pathname?.startsWith(link.href));
-    return match?.name ?? null;
-  }, [pathname]);
+          const activeLink = useMemo(() => {
+          if (!pathname) return null;
+
+          // Exact match for home
+          if (pathname === '/') return 'New Arrivals';
+
+          const match = navLinks.find(
+            (link) => link.href !== '/' && pathname.startsWith(link.href)
+          );
+
+          return match?.name ?? null;
+        }, [pathname]);
 
   const headerShadow = useTransform(
     scrollY,
