@@ -2,7 +2,7 @@
 
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import { Search, Heart, ShoppingCart, User, Menu, X, LogOut } from 'lucide-react';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import Image from 'next/image';
 import { LucideIcon } from 'lucide-react';
 import Link from 'next/link';
@@ -10,11 +10,9 @@ import { auth } from '@/lib/firebase';
 import { signOut } from 'firebase/auth';
 import { useRouter, usePathname } from 'next/navigation';
 import { useUser } from '@/context/UserContext';
-import { useCart } from '@/context/CartContext';
-import { useWishlist } from '@/context/WishlistContext';
 
 const navLinks = [
-  { name: 'New Arrivals', href: '/' },
+  { name: 'New Arrivals', href: '/new-arrivals' },
   { name: 'Clothing', href: '/clothing' },
   { name: 'Jewelry', href: '/jewelry' },
   { name: 'Bags', href: '/bags' },
@@ -24,16 +22,18 @@ const navLinks = [
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [activeLink, setActiveLink] = useState('New Arrivals');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [notification, setNotification] = useState<string | null>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const { scrollY } = useScroll();
   const { user, loading } = useUser();
   const router = useRouter();
   const pathname = usePathname();
-  const { cartCount } = useCart();
-  const { wishlistCount } = useWishlist();
+
+  // Derive active link directly from pathname — no setState in effect
+  const activeLink = useMemo(() => {
+    const match = navLinks.find((link) => pathname?.startsWith(link.href));
+    return match?.name ?? null;
+  }, [pathname]);
 
   const headerShadow = useTransform(
     scrollY,
@@ -66,22 +66,6 @@ export default function Header() {
       console.error('Logout error:', error);
     }
   };
-
-  const notify = (message: string) => {
-    setNotification(message);
-  };
-
-  useEffect(() => {
-    if (!pathname) return;
-    const match = navLinks.find((link) => link.href === pathname);
-    setActiveLink(match?.name ?? 'New Arrivals');
-  }, [pathname]);
-
-  useEffect(() => {
-    if (!notification) return;
-    const timer = setTimeout(() => setNotification(null), 1500);
-    return () => clearTimeout(timer);
-  }, [notification]);
 
   return (
     <>
@@ -121,18 +105,8 @@ export default function Header() {
           )}
         </AnimatePresence>
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-18 sm:h-22 lg:h-24">
-            {notification && (
-              <motion.div
-                className="absolute right-4 top-full mt-2 rounded-full bg-[#FF9B9B]/20 px-4 py-1 text-sm text-[#FF9B9B]"
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-              >
-                {notification}
-              </motion.div>
-            )}
 
             {/* Logo */}
             <motion.div
@@ -181,7 +155,6 @@ export default function Header() {
                   initial={{ opacity: 0, y: -20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.1 * index }}
-                  onClick={() => setActiveLink(link.name)}
                   whileHover={{ y: -2 }}
                 >
                   {link.name}
@@ -208,28 +181,9 @@ export default function Header() {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5, delay: 0.3 }}
               >
-                <IconButton
-                  icon={Search}
-                  label="Search"
-                  onClick={() => {
-                    setIsSearchOpen(true);
-                    notify("Search opened");
-                  }}
-                />
-                <IconButton
-                  icon={Heart}
-                  label="Wishlist"
-                  badge={wishlistCount}
-                  href="/wishlist"
-                  onClick={() => notify("Wishlist opened")}
-                />
-                <IconButton
-                  icon={ShoppingCart}
-                  label="Cart"
-                  badge={cartCount}
-                  href="/cart"
-                  onClick={() => notify("Cart opened")}
-                />
+                <IconButton icon={Search} label="Search" onClick={() => setIsSearchOpen(true)} />
+                <IconButton icon={Heart} label="Wishlist" badge={0} href="/wishlist" />
+                <IconButton icon={ShoppingCart} label="Cart" badge={0} href="/cart" />
 
                 {/* User / Logout icon — desktop */}
                 {!loading && (
@@ -271,13 +225,8 @@ export default function Header() {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5, delay: 0.3 }}
               >
-                <MobileTopIcon icon={Heart} label="Wishlist" badge={wishlistCount} href="/wishlist" />
-                <MobileTopIcon
-                  icon={ShoppingCart}
-                  label="Cart"
-                  badge={cartCount}
-                  href="/cart"
-                />
+                <MobileTopIcon icon={Heart} label="Wishlist" badge={0} href="/wishlist" />
+                <MobileTopIcon icon={ShoppingCart} label="Cart" badge={0} href="/cart" />
 
                 {/* Hamburger */}
                 <motion.button
@@ -358,10 +307,7 @@ export default function Header() {
                     x: isMobileMenuOpen ? 0 : 50,
                   }}
                   transition={{ delay: 0.05 * index }}
-                  onClick={() => {
-                    setActiveLink(link.name);
-                    setIsMobileMenuOpen(false);
-                  }}
+                  onClick={() => setIsMobileMenuOpen(false)}
                   whileTap={{ scale: 0.98 }}
                 >
                   {link.name}
@@ -430,17 +376,6 @@ function IconButton({
   onClick?: () => void;
   href?: string;
 }) {
-  const inner = (
-    <>
-      <Icon size={26} strokeWidth={1.6} />
-      {badge && (
-        <span className="absolute -top-1 right-0 translate-x-1 bg-[#FF9B9B] text-[#1A1A1A] text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center leading-none">
-          {badge}
-        </span>
-      )}
-    </>
-  );
-
   if (href) {
     return (
       <motion.div
@@ -448,14 +383,14 @@ function IconButton({
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
       >
-        <Link
-          href={href}
-          aria-label={label}
-          className="block outline-none focus:outline-none"
-          onClick={onClick}
-        >
-          {inner}
+        <Link href={href} aria-label={label} className="block outline-none focus:outline-none">
+          <Icon size={26} strokeWidth={1.6} />
         </Link>
+        {badge ? (
+          <span className="absolute top-0.5 right-0.5 bg-[#FF9B9B] text-[#1A1A1A] text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center leading-none pointer-events-none">
+            {badge}
+          </span>
+        ) : null}
       </motion.div>
     );
   }
@@ -468,7 +403,12 @@ function IconButton({
       aria-label={label}
       onClick={onClick}
     >
-      {inner}
+      <Icon size={26} strokeWidth={1.6} />
+      {badge ? (
+        <span className="absolute top-0.5 right-0.5 bg-[#FF9B9B] text-[#1A1A1A] text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center leading-none pointer-events-none">
+          {badge}
+        </span>
+      ) : null}
     </motion.button>
   );
 }
@@ -486,38 +426,37 @@ function MobileTopIcon({
   onClick?: () => void;
   href?: string;
 }) {
-  const inner = (
-    <>
-      <Icon size={20} strokeWidth={1.8} />
-        {badge && (
-          <span className="absolute -top-1 right-0 translate-x-1 bg-[#FF9B9B] text-[#1A1A1A] text-[9px] font-bold rounded-full w-3.5 h-3.5 flex items-center justify-center leading-none">
-            {badge}
-          </span>
-        )}
-    </>
-  );
-
   if (href) {
     return (
       <motion.div
-        className="relative shrink-0 text-white/80 hover:text-[#FF9B9B] transition-colors"
+        className="relative shrink-0 text-white/80 hover:text-[#FF9B9B] transition-colors p-1"
         whileTap={{ scale: 0.85 }}
       >
         <Link href={href} aria-label={label} className="block outline-none focus:outline-none">
-          {inner}
+          <Icon size={20} strokeWidth={1.8} />
         </Link>
+        {badge ? (
+          <span className="absolute top-0 right-0 bg-[#FF9B9B] text-[#1A1A1A] text-[9px] font-bold rounded-full w-3.5 h-3.5 flex items-center justify-center leading-none pointer-events-none">
+            {badge}
+          </span>
+        ) : null}
       </motion.div>
     );
   }
 
   return (
     <motion.button
-      className="relative shrink-0 text-white/80 hover:text-[#FF9B9B] transition-colors bg-transparent border-none cursor-pointer outline-none focus:outline-none"
+      className="relative shrink-0 text-white/80 hover:text-[#FF9B9B] transition-colors bg-transparent border-none cursor-pointer p-1 outline-none focus:outline-none"
       whileTap={{ scale: 0.85 }}
       aria-label={label}
       onClick={onClick}
     >
-      {inner}
+      <Icon size={20} strokeWidth={1.8} />
+      {badge ? (
+        <span className="absolute top-0 right-0 bg-[#FF9B9B] text-[#1A1A1A] text-[9px] font-bold rounded-full w-3.5 h-3.5 flex items-center justify-center leading-none pointer-events-none">
+          {badge}
+        </span>
+      ) : null}
     </motion.button>
   );
 }
