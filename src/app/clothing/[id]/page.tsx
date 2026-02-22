@@ -7,7 +7,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { clothingService } from "@/lib/services/clothingService";
 import { Clothing } from "@/lib/types/clothing";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { useCart } from "@/context/CartContext";
+import { useWishlist } from "@/context/WishlistContext";
+import { useNotification } from "@/context/NotificationContext";
+import { useUser } from "@/context/UserContext";
+import { ArrowLeft, Loader2, ShoppingCart, Heart } from "lucide-react";
 
 const formatNaira = (amount: number): string => {
   return amount.toLocaleString("en-NG", {
@@ -19,12 +23,19 @@ const formatNaira = (amount: number): string => {
 export default function ClothingDetailPage() {
   const params = useParams();
   const router = useRouter();
+  const { user } = useUser();
+  const { addToCart } = useCart();
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const { notify } = useNotification();
+
   const [item, setItem] = useState<Clothing | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeImage, setActiveImage] = useState(0);
 
   const id = params.id as string;
+  const inWishlist = item ? isInWishlist(item.id) : false;
+  const isUnavailable = item ? item.unitsInStock <= 0 : false;
 
   useEffect(() => {
     const fetchItem = async () => {
@@ -47,6 +58,47 @@ export default function ClothingDetailPage() {
       fetchItem();
     }
   }, [id]);
+
+  const handleCart = async () => {
+    if (!item) return;
+    if (!user) {
+      notify("Log in to add to cart", "error");
+      return;
+    }
+    if (isUnavailable) {
+      notify("Item is out of stock", "error");
+      return;
+    }
+    await addToCart({
+      id: item.id,
+      name: item.name,
+      price: item.price,
+      image: item.images?.[0] || "",
+      type: "clothing",
+    });
+    notify(`Added ${item.name} to cart`, "success");
+  };
+
+  const handleWishlist = async () => {
+    if (!item) return;
+    if (!user) {
+      notify("Log in to add to wishlist", "error");
+      return;
+    }
+    if (inWishlist) {
+      await removeFromWishlist(item.id);
+      notify("Removed from wishlist");
+    } else {
+      await addToWishlist({
+        id: item.id,
+        name: item.name,
+        price: item.price,
+        image: item.images?.[0] || "",
+        type: "clothing",
+      });
+      notify(`Added ${item.name} to wishlist`, "success");
+    }
+  };
 
   if (loading) {
     return (
@@ -84,7 +136,7 @@ export default function ClothingDetailPage() {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
         <Link
           href="/clothing"
           className="inline-flex items-center gap-2 text-white/60 hover:text-[#FF9B9B] transition-colors"
@@ -103,6 +155,7 @@ export default function ClothingDetailPage() {
           }}
           transition={{ delay: 0.2 }}
         >
+          {/* Images */}
           <div className="space-y-4">
             <div className="relative aspect-4/5 rounded-2xl overflow-hidden border border-white/10 bg-white/5">
               {item.images?.[activeImage] ? (
@@ -121,13 +174,13 @@ export default function ClothingDetailPage() {
             </div>
 
             {item.images && item.images.length > 1 && (
-              <div className="flex gap-2 overflow-x-auto">
+              <div className="flex gap-2 overflow-x-auto pb-1">
                 {item.images.map((img, index) => (
                   <button
                     key={img}
                     onClick={() => setActiveImage(index)}
-                    className={`relative w-20 h-24 rounded-lg overflow-hidden border ${
-                      activeImage === index ? "border-[#FF9B9B]" : "border-white/10"
+                    className={`relative shrink-0 w-20 h-24 rounded-lg overflow-hidden border transition-colors ${
+                      activeImage === index ? "border-[#FF9B9B]" : "border-white/10 hover:border-white/30"
                     }`}
                   >
                     <Image src={img} alt={`${item.name} ${index + 1}`} fill className="object-cover" />
@@ -137,6 +190,7 @@ export default function ClothingDetailPage() {
             )}
           </div>
 
+          {/* Details */}
           <div className="space-y-6">
             <div>
               <p className="text-sm uppercase tracking-[0.3em] text-white/50">{item.brand}</p>
@@ -157,6 +211,38 @@ export default function ClothingDetailPage() {
 
             <p className="text-white/70 leading-relaxed">{item.description}</p>
 
+            {/* Stock */}
+            <p className={`text-sm font-semibold ${isUnavailable ? "text-red-400" : "text-emerald-400"}`}>
+              {isUnavailable ? "Out of stock" : `${item.unitsInStock} in stock`}
+            </p>
+
+            {/* Action Buttons */}
+            <div className="flex items-center gap-3">
+              <button
+                onClick={handleCart}
+                disabled={isUnavailable}
+                className="flex-1 flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-[#FF9B9B] text-[#1A1A1A] font-semibold hover:bg-[#FFB8B8] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                <ShoppingCart className="w-5 h-5" />
+                {isUnavailable ? "Out of stock" : "Add to Cart"}
+              </button>
+
+              <button
+                onClick={handleWishlist}
+                aria-label={inWishlist ? "Remove from wishlist" : "Add to wishlist"}
+                className="p-3.5 rounded-full border border-white/20 hover:border-[#FF9B9B] transition-all duration-200"
+              >
+                <Heart
+                  className={`w-5 h-5 transition-all duration-200 ${
+                    inWishlist
+                      ? "fill-[#FF9B9B] text-[#FF9B9B] drop-shadow-[0_0_8px_rgba(255,155,155,0.8)]"
+                      : "text-white/70"
+                  }`}
+                />
+              </button>
+            </div>
+
+            {/* Details grid */}
             <div className="border border-white/10 rounded-2xl p-5 bg-white/5">
               <h2 className="text-lg font-semibold text-white mb-4">Details</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-white/70">
@@ -189,10 +275,6 @@ export default function ClothingDetailPage() {
                   </div>
                 )}
               </div>
-            </div>
-
-            <div className="text-sm text-white/50">
-              {item.unitsInStock > 0 ? `${item.unitsInStock} in stock` : "Out of stock"}
             </div>
           </div>
         </motion.div>

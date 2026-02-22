@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import Image from "next/image";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
 import { useNotification } from "@/context/NotificationContext";
@@ -27,11 +27,14 @@ const formatNaira = (amount: number): string => {
 export default function ClothingCard({ item, isAdmin = false, onEdit, onDelete }: ClothingCardProps) {
   const { user } = useUser();
   const { addToCart } = useCart();
-  const { addToWishlist, isInWishlist } = useWishlist();
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const { notify } = useNotification();
+  const router = useRouter();
   const isUnavailable = item.unitsInStock <= 0;
+  const inWishlist = isInWishlist(item.id);
 
-  const handleCart = async () => {
+  const handleCart = async (e: React.MouseEvent) => {
+    e.stopPropagation();
     if (!user) {
       notify("Log in to add to cart", "error");
       return;
@@ -50,27 +53,46 @@ export default function ClothingCard({ item, isAdmin = false, onEdit, onDelete }
     notify(`Added ${item.name} to cart`, "success");
   };
 
-  const handleWishlist = async () => {
+  const handleWishlist = async (e: React.MouseEvent) => {
+    e.stopPropagation();
     if (!user) {
       notify("Log in to add to wishlist", "error");
       return;
     }
-    if (isInWishlist(item.id)) {
-      notify("Already in wishlist");
-      return;
+    if (inWishlist) {
+      await removeFromWishlist(item.id);
+      notify(`Removed from wishlist`);
+    } else {
+      await addToWishlist({
+        id: item.id,
+        name: item.name,
+        price: item.price,
+        image: item.images?.[0] || "",
+        type: "clothing",
+      });
+      notify(`Added ${item.name} to wishlist`, "success");
     }
-    await addToWishlist({
-      id: item.id,
-      name: item.name,
-      price: item.price,
-      image: item.images?.[0] || "",
-      type: "clothing",
-    });
-    notify(`Added ${item.name} to wishlist`, "success");
   };
+
+  const handleAdminEdit = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onEdit?.(item);
+  };
+
+  const handleAdminDelete = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onDelete?.(item.id);
+  };
+
   return (
-    <div className="group bg-[#1A1A1A] border border-white/10 rounded-2xl overflow-hidden shadow-lg shadow-black/20 hover:shadow-black/40 transition-all duration-300">
-      <div className="relative aspect-[4/5] bg-black/20 overflow-hidden">
+    <motion.div
+      onClick={() => router.push(`/clothing/${item.id}`)}
+      className="group bg-[#1A1A1A] border border-white/10 rounded-2xl overflow-hidden shadow-lg shadow-black/20 hover:shadow-black/40 hover:border-white/20 transition-all duration-300 cursor-pointer"
+      whileHover={{ y: -2 }}
+      transition={{ duration: 0.2 }}
+    >
+      {/* Image */}
+      <div className="relative aspect-4/5 bg-black/20 overflow-hidden">
         {item.images?.[0] ? (
           <Image
             src={item.images[0]}
@@ -86,97 +108,88 @@ export default function ClothingCard({ item, isAdmin = false, onEdit, onDelete }
         )}
 
         {item.featured && (
-          <span className="absolute top-3 left-3 px-3 py-1 rounded-full bg-[#FF9B9B] text-[#1A1A1A] text-xs font-bold tracking-wide">
+          <span className="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-[#FF9B9B] text-[#1A1A1A] text-[10px] font-bold tracking-wide">
             Featured
           </span>
         )}
 
         {item.originalPrice && item.originalPrice > item.price && (
-          <span className="absolute top-3 right-3 px-3 py-1 rounded-full bg-black/70 text-white text-xs font-semibold">
-            Save {Math.round(((item.originalPrice - item.price) / item.originalPrice) * 100)}%
+          <span className="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-black/70 text-white text-[10px] font-semibold">
+            -{Math.round(((item.originalPrice - item.price) / item.originalPrice) * 100)}%
           </span>
         )}
+
+        {/* Wishlist icon overlay */}
+        <button
+          onClick={handleWishlist}
+          aria-label={inWishlist ? "Remove from wishlist" : "Add to wishlist"}
+          className="absolute bottom-2 right-2 p-1.5 rounded-full bg-black/50 backdrop-blur-sm border border-white/10 transition-all duration-200 hover:bg-black/70"
+        >
+          <Heart
+            className={`w-4 h-4 transition-all duration-200 ${
+              inWishlist
+                ? "fill-[#FF9B9B] text-[#FF9B9B] drop-shadow-[0_0_6px_rgba(255,155,155,0.8)]"
+                : "text-white/70"
+            }`}
+          />
+        </button>
       </div>
 
-      <div className="p-4">
-        <div className="flex items-center justify-between gap-2 mb-2">
-          <span className="text-xs font-semibold text-[#FFB8B8] uppercase tracking-wider">
+      {/* Info */}
+      <div className="p-3">
+        <div className="flex items-center justify-between gap-1 mb-1">
+          <span className="text-[10px] font-semibold text-[#FFB8B8] uppercase tracking-wider truncate">
             {item.brand}
           </span>
-          <span className="text-xs text-white/50">{item.category}</span>
+          <span className="text-[10px] text-white/40 shrink-0">{item.specifications.size}</span>
         </div>
 
-        <h3 className="font-heading text-xl text-white tracking-wide uppercase line-clamp-1">
+        <h3 className="font-heading text-base text-white tracking-wide uppercase line-clamp-1">
           {item.name}
         </h3>
 
-        <div className="mt-2 flex items-baseline gap-2">
-          <span className="text-lg font-semibold text-[#FF9B9B]">
+        <div className="mt-1 flex items-baseline gap-1.5">
+          <span className="text-sm font-semibold text-[#FF9B9B]">
             ₦{formatNaira(item.price)}
           </span>
           {item.originalPrice && item.originalPrice > item.price && (
-            <span className="text-sm text-white/40 line-through">
+            <span className="text-xs text-white/40 line-through">
               ₦{formatNaira(item.originalPrice)}
             </span>
           )}
         </div>
 
-        <div className="mt-3 flex items-center justify-between text-xs text-white/50">
-          <span>{item.specifications.size}</span>
-          <span className="uppercase tracking-wider">{item.specifications.color}</span>
-        </div>
-
-        <div className="mt-4 flex items-center gap-2">
-          <motion.div
-            className="flex-1 flex items-center gap-2"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.1 }}
+        {/* Actions */}
+        <div className="mt-3 flex items-center gap-2">
+          <button
+            onClick={handleCart}
+            disabled={isUnavailable}
+            className="flex-1 flex items-center justify-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-lg bg-[#FF9B9B] text-[#1A1A1A] hover:bg-[#FFB8B8] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            <button
-              onClick={handleCart}
-              disabled={isUnavailable}
-              className="flex-1 flex items-center justify-center gap-2 text-sm font-semibold px-3 py-2 rounded-lg bg-[#FF9B9B] text-[#1A1A1A] hover:bg-[#FFB8B8] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <ShoppingCart className="w-4 h-4" />
-              Add to cart
-            </button>
-            <button
-              onClick={handleWishlist}
-              className="flex items-center justify-center gap-1 px-3 py-2 rounded-lg border border-white/20 text-xs font-semibold text-white hover:border-white/40 transition-colors"
-            >
-              <Heart className="w-3.5 h-3.5" />
-              Wishlist
-            </button>
-          </motion.div>
-
-          <Link
-            href={`/clothing/${item.id}`}
-            className="flex-1 text-center text-sm font-semibold px-3 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors"
-          >
-            View
-          </Link>
+            <ShoppingCart className="w-3.5 h-3.5 shrink-0" />
+            {isUnavailable ? "Out of stock" : "Add to cart"}
+          </button>
 
           {isAdmin && (
             <>
               <button
-                onClick={() => onEdit?.(item)}
+                onClick={handleAdminEdit}
                 className="p-2 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors"
                 aria-label="Edit"
               >
-                <Edit className="w-4 h-4" />
+                <Edit className="w-3.5 h-3.5" />
               </button>
               <button
-                onClick={() => onDelete?.(item.id)}
+                onClick={handleAdminDelete}
                 className="p-2 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors"
                 aria-label="Delete"
               >
-                <Trash2 className="w-4 h-4" />
+                <Trash2 className="w-3.5 h-3.5" />
               </button>
             </>
           )}
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

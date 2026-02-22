@@ -7,6 +7,7 @@ import { ArrowLeft, Trash2, ShoppingCart, Loader2 } from "lucide-react";
 import { useWishlist } from "@/context/WishlistContext";
 import { useCart } from "@/context/CartContext";
 import { useUser } from "@/context/UserContext";
+import { useNotification } from "@/context/NotificationContext";
 
 const formatNaira = (amount: number): string =>
   amount.toLocaleString("en-NG", {
@@ -18,6 +19,23 @@ export default function WishlistPage() {
   const { user } = useUser();
   const { wishlist, removeFromWishlist, loading } = useWishlist();
   const { addToCart } = useCart();
+  const { notify } = useNotification();
+
+  const handleAddToCart = async (item: typeof wishlist[number]) => {
+    await addToCart({
+      id: item.id,
+      name: item.name,
+      price: item.price,
+      image: item.image,
+      type: "clothing",
+    });
+    notify(`Added ${item.name} to cart`, "success");
+  };
+
+  const handleRemove = async (item: typeof wishlist[number]) => {
+    await removeFromWishlist(item.id);
+    notify(`Removed ${item.name} from wishlist`);
+  };
 
   if (!user) {
     return (
@@ -49,7 +67,7 @@ export default function WishlistPage() {
         <div className="flex items-center justify-between">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-white/70 hover:text-white"
+            className="inline-flex items-center gap-2 text-white/70 hover:text-white transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             Home
@@ -86,9 +104,9 @@ export default function WishlistPage() {
             {wishlist.map((item) => (
               <div
                 key={item.id}
-                className="flex gap-4 p-4 bg-white/5 border border-white/10 rounded-2xl"
+                className="flex gap-4 p-4 bg-white/5 border border-white/10 rounded-2xl hover:border-white/20 transition-colors"
               >
-                <div className="relative w-28 h-32 rounded-2xl overflow-hidden bg-white/5 border border-white/10">
+                <div className="relative w-28 h-32 rounded-2xl overflow-hidden bg-white/5 border border-white/10 shrink-0">
                   <Image
                     src={item.image || "/logo.png"}
                     alt={item.name}
@@ -97,22 +115,25 @@ export default function WishlistPage() {
                     sizes="112px"
                   />
                 </div>
-                <div className="flex-1 flex flex-col justify-between">
+                <div className="flex-1 flex flex-col justify-between min-w-0">
                   <div>
-                    <p className="text-lg font-semibold">{item.name}</p>
-                    <p className="text-sm text-white/50">₦{formatNaira(item.price)}</p>
+                    <p className="text-lg font-semibold truncate">{item.name}</p>
+                    <p className="text-sm text-[#FF9B9B] font-semibold mt-0.5">
+                      ₦{formatNaira(item.price)}
+                    </p>
                   </div>
-                  <div className="flex items-center gap-2 text-sm">
+                  <div className="flex items-center gap-2">
                     <button
-                      onClick={() => addToCart({ id: item.id, name: item.name, price: item.price, image: item.image, type: "clothing" })}
-                      className="flex-1 px-3 py-2 text-sm rounded-full border border-white/20 hover:border-white/40 transition-colors"
+                      onClick={() => handleAddToCart(item)}
+                      className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm font-semibold rounded-full bg-[#FF9B9B] text-[#1A1A1A] hover:bg-[#FFB8B8] transition-colors"
                     >
-                      <ShoppingCart className="inline-block mr-2" size={16} />
+                      <ShoppingCart size={15} />
                       Add to cart
                     </button>
                     <button
-                      onClick={() => removeFromWishlist(item.id)}
-                      className="px-3 py-2 rounded-full border border-white/20 hover:border-white/40 transition-colors"
+                      onClick={() => handleRemove(item)}
+                      className="p-2 rounded-full border border-white/20 text-white/50 hover:border-[#FF9B9B] hover:text-[#FF9B9B] transition-colors"
+                      aria-label="Remove from wishlist"
                     >
                       <Trash2 size={16} />
                     </button>

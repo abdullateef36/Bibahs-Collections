@@ -6,6 +6,7 @@ import Image from "next/image";
 import { ArrowLeft, Minus, Plus, Trash2, Loader2 } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { useUser } from "@/context/UserContext";
+import { useNotification } from "@/context/NotificationContext";
 
 const formatNaira = (amount: number): string =>
   amount.toLocaleString("en-NG", {
@@ -16,6 +17,16 @@ const formatNaira = (amount: number): string =>
 export default function CartPage() {
   const { user } = useUser();
   const { cart, cartTotal, updateQuantity, removeFromCart, loading } = useCart();
+  const { notify } = useNotification();
+
+  const handleRemove = async (id: string, name: string) => {
+    await removeFromCart(id);
+    notify(`Removed ${name} from cart`);
+  };
+
+  const handleQuantity = async (id: string, delta: number) => {
+    await updateQuantity(id, delta);
+  };
 
   if (!user) {
     return (
@@ -88,7 +99,7 @@ export default function CartPage() {
                   className="flex flex-col gap-4 p-4 bg-white/5 border border-white/10 rounded-2xl shadow-sm"
                 >
                   <div className="flex items-start gap-4">
-                    <div className="relative w-24 h-24 rounded-2xl overflow-hidden bg-white/5 border border-white/10">
+                    <div className="relative w-24 h-24 rounded-2xl overflow-hidden bg-white/5 border border-white/10 shrink-0">
                       <Image
                         src={item.image || "/logo.png"}
                         alt={item.name}
@@ -97,17 +108,18 @@ export default function CartPage() {
                         sizes="96px"
                       />
                     </div>
-                    <div className="flex-1">
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <p className="font-semibold text-lg">{item.name}</p>
-                          <p className="text-xs uppercase tracking-wide text-white/50">
-                            Clothing
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0">
+                          <p className="font-semibold text-lg leading-tight truncate">{item.name}</p>
+                          <p className="text-xs uppercase tracking-wide text-white/50 mt-0.5">
+                            {item.type ?? "Clothing"}
                           </p>
                         </div>
                         <button
-                          onClick={() => removeFromCart(item.id)}
-                          className="text-white/40 hover:text-white transition-colors"
+                          onClick={() => handleRemove(item.id, item.name)}
+                          className="text-white/40 hover:text-[#FF9B9B] transition-colors shrink-0 mt-0.5"
+                          aria-label="Remove item"
                         >
                           <Trash2 size={16} />
                         </button>
@@ -115,51 +127,65 @@ export default function CartPage() {
                       <p className="text-sm text-white/60 mt-2">
                         {item.available ? "In stock" : "Unavailable"}
                       </p>
-                      <div className="mt-3 flex items-center gap-2 text-sm">
+                      <div className="mt-3 flex items-center gap-3 text-sm">
                         <button
-                          onClick={() => updateQuantity(item.id, -1)}
-                          className="w-8 h-8 rounded-full border border-white/20 text-white/80 hover:border-white/40 transition-colors"
+                          onClick={() => handleQuantity(item.id, -1)}
+                          className="w-8 h-8 rounded-full border border-white/20 text-white/80 hover:border-[#FF9B9B] hover:text-[#FF9B9B] transition-colors flex items-center justify-center disabled:opacity-40"
                           disabled={item.quantity <= 1}
+                          aria-label="Decrease quantity"
                         >
-                          <Minus className="mx-auto" />
+                          <Minus size={14} />
                         </button>
-                        <span className="font-semibold">{item.quantity}</span>
+                        <span className="font-semibold w-4 text-center">{item.quantity}</span>
                         <button
-                          onClick={() => updateQuantity(item.id, 1)}
-                          className="w-8 h-8 rounded-full border border-white/20 text-white/80 hover:border-white/40 transition-colors"
+                          onClick={() => handleQuantity(item.id, 1)}
+                          className="w-8 h-8 rounded-full border border-white/20 text-white/80 hover:border-[#FF9B9B] hover:text-[#FF9B9B] transition-colors flex items-center justify-center"
+                          aria-label="Increase quantity"
                         >
-                          <Plus className="mx-auto" />
+                          <Plus size={14} />
                         </button>
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center justify-between text-base font-semibold">
-                    <span>Total</span>
-                    <span>₦{formatNaira(item.price * item.quantity)}</span>
+                  <div className="flex items-center justify-between text-base font-semibold border-t border-white/10 pt-3">
+                    <span className="text-white/60 text-sm">₦{formatNaira(item.price)} × {item.quantity}</span>
+                    <span className="text-[#FF9B9B]">₦{formatNaira(item.price * item.quantity)}</span>
                   </div>
                 </div>
               ))}
             </div>
 
             <motion.div
-              className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-4"
+              className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-4 h-fit"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
             >
+              <h2 className="font-heading text-2xl text-white">Order Summary</h2>
               <div className="flex justify-between text-sm text-white/60">
-                <span>Subtotal</span>
+                <span>Subtotal ({cart.length} {cart.length === 1 ? "item" : "items"})</span>
                 <span>₦{formatNaira(cartTotal)}</span>
               </div>
-              <p className="text-xs text-white/50">
-                Taxes and shipping calculated at checkout.
-              </p>
+              <div className="flex justify-between text-sm text-white/60">
+                <span>Shipping</span>
+                <span className="text-white/40">Calculated at checkout</span>
+              </div>
+              <div className="border-t border-white/10 pt-3 flex justify-between font-semibold text-white">
+                <span>Total</span>
+                <span className="text-[#FF9B9B]">₦{formatNaira(cartTotal)}</span>
+              </div>
               <button
                 disabled
-                className="w-full px-4 py-3 rounded-full text-sm font-semibold uppercase tracking-widest bg-[#FF9B9B]/30 text-[#1A1A1A]"
+                className="w-full px-4 py-3 rounded-full text-sm font-semibold uppercase tracking-widest bg-[#FF9B9B]/30 text-white/40 cursor-not-allowed"
               >
                 Checkout (coming soon)
               </button>
+              <Link
+                href="/clothing"
+                className="block text-center text-xs text-white/40 hover:text-white transition-colors"
+              >
+                Continue Shopping
+              </Link>
             </motion.div>
           </motion.div>
         )}
