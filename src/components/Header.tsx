@@ -15,7 +15,7 @@ import { useWishlist } from '@/context/WishlistContext';
 import { useNotification } from '@/context/NotificationContext';
 
 const navLinks = [
-  { name: 'New Arrivals', href: '/new-arrivals' },
+  { name: 'New Arrivals', href: '/' },
   { name: 'Clothing', href: '/clothing' },
   { name: 'Jewelry', href: '/jewelry' },
   { name: 'Bags', href: '/bags' },

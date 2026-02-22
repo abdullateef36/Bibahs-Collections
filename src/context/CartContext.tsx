@@ -8,6 +8,7 @@ import { clothingService } from "@/lib/services/clothingService";
 import { jewelryService } from "@/lib/services/jewelryService";
 import { bagService } from "@/lib/services/bagService";
 import { shoeService } from "@/lib/services/shoeService";
+import { perfumeService } from "@/lib/services/perfumeService";
 
 interface CartItem {
   id: string;
@@ -15,7 +16,7 @@ interface CartItem {
   price: number;
   image: string;
   quantity: number;
-  type: "clothing" | "jewelry" | "bags" | "shoes";
+  type: "clothing" | "jewelry" | "bags" | "shoes" | "perfumes";
   available: boolean;
 }
 
@@ -114,6 +115,22 @@ export function CartProvider({ children }: { children: ReactNode }) {
                   image: shoe.images?.[0] || "",
                   quantity: data.quantity,
                   type: "shoes",
+                  available: true,
+                });
+                continue;
+              }
+            }
+
+            if (data.type === "perfumes") {
+              const perfume = await perfumeService.getPerfume(data.id);
+              if (perfume) {
+                items.push({
+                  id: perfume.id,
+                  name: perfume.name,
+                  price: perfume.price,
+                  image: perfume.images?.[0] || "",
+                  quantity: data.quantity,
+                  type: "perfumes",
                   available: true,
                 });
                 continue;
