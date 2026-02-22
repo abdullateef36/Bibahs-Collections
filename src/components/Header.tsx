@@ -8,8 +8,10 @@ import { LucideIcon } from 'lucide-react';
 import Link from 'next/link';
 import { auth } from '@/lib/firebase';
 import { signOut } from 'firebase/auth';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useUser } from '@/context/UserContext';
+import { useCart } from '@/context/CartContext';
+import { useWishlist } from '@/context/WishlistContext';
 
 const navLinks = [
   { name: 'New Arrivals', href: '/' },
@@ -24,10 +26,14 @@ export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeLink, setActiveLink] = useState('New Arrivals');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [notification, setNotification] = useState<string | null>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const { scrollY } = useScroll();
   const { user, loading } = useUser();
   const router = useRouter();
+  const pathname = usePathname();
+  const { cartCount } = useCart();
+  const { wishlistCount } = useWishlist();
 
   const headerShadow = useTransform(
     scrollY,
@@ -60,6 +66,22 @@ export default function Header() {
       console.error('Logout error:', error);
     }
   };
+
+  const notify = (message: string) => {
+    setNotification(message);
+  };
+
+  useEffect(() => {
+    if (!pathname) return;
+    const match = navLinks.find((link) => link.href === pathname);
+    setActiveLink(match?.name ?? 'New Arrivals');
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!notification) return;
+    const timer = setTimeout(() => setNotification(null), 1500);
+    return () => clearTimeout(timer);
+  }, [notification]);
 
   return (
     <>
@@ -99,8 +121,18 @@ export default function Header() {
           )}
         </AnimatePresence>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-18 sm:h-22 lg:h-24">
+            {notification && (
+              <motion.div
+                className="absolute right-4 top-full mt-2 rounded-full bg-[#FF9B9B]/20 px-4 py-1 text-sm text-[#FF9B9B]"
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+              >
+                {notification}
+              </motion.div>
+            )}
 
             {/* Logo */}
             <motion.div
@@ -176,9 +208,28 @@ export default function Header() {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5, delay: 0.3 }}
               >
-                <IconButton icon={Search} label="Search" onClick={() => setIsSearchOpen(true)} />
-                <IconButton icon={Heart} label="Wishlist" badge={3} href="/wishlist" />
-                <IconButton icon={ShoppingCart} label="Cart" badge={2} href="/cart" />
+                <IconButton
+                  icon={Search}
+                  label="Search"
+                  onClick={() => {
+                    setIsSearchOpen(true);
+                    notify("Search opened");
+                  }}
+                />
+                <IconButton
+                  icon={Heart}
+                  label="Wishlist"
+                  badge={wishlistCount}
+                  href="/wishlist"
+                  onClick={() => notify("Wishlist opened")}
+                />
+                <IconButton
+                  icon={ShoppingCart}
+                  label="Cart"
+                  badge={cartCount}
+                  href="/cart"
+                  onClick={() => notify("Cart opened")}
+                />
 
                 {/* User / Logout icon — desktop */}
                 {!loading && (
@@ -220,8 +271,13 @@ export default function Header() {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5, delay: 0.3 }}
               >
-                <MobileTopIcon icon={Heart} label="Wishlist" badge={3} href="/wishlist" />
-                <MobileTopIcon icon={ShoppingCart} label="Cart" badge={2} href="/cart" />
+                <MobileTopIcon icon={Heart} label="Wishlist" badge={wishlistCount} href="/wishlist" />
+                <MobileTopIcon
+                  icon={ShoppingCart}
+                  label="Cart"
+                  badge={cartCount}
+                  href="/cart"
+                />
 
                 {/* Hamburger */}
                 <motion.button
@@ -378,7 +434,7 @@ function IconButton({
     <>
       <Icon size={26} strokeWidth={1.6} />
       {badge && (
-        <span className="absolute -top-1 -right-1 bg-[#FF9B9B] text-[#1A1A1A] text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center leading-none">
+        <span className="absolute -top-1 right-0 translate-x-1 bg-[#FF9B9B] text-[#1A1A1A] text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center leading-none">
           {badge}
         </span>
       )}
@@ -392,7 +448,12 @@ function IconButton({
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
       >
-        <Link href={href} aria-label={label} className="block outline-none focus:outline-none">
+        <Link
+          href={href}
+          aria-label={label}
+          className="block outline-none focus:outline-none"
+          onClick={onClick}
+        >
           {inner}
         </Link>
       </motion.div>
@@ -428,11 +489,11 @@ function MobileTopIcon({
   const inner = (
     <>
       <Icon size={20} strokeWidth={1.8} />
-      {badge && (
-        <span className="absolute -top-1 -right-1 bg-[#FF9B9B] text-[#1A1A1A] text-[9px] font-bold rounded-full w-3.5 h-3.5 flex items-center justify-center leading-none">
-          {badge}
-        </span>
-      )}
+        {badge && (
+          <span className="absolute -top-1 right-0 translate-x-1 bg-[#FF9B9B] text-[#1A1A1A] text-[9px] font-bold rounded-full w-3.5 h-3.5 flex items-center justify-center leading-none">
+            {badge}
+          </span>
+        )}
     </>
   );
 

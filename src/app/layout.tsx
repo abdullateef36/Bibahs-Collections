@@ -4,6 +4,8 @@ import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { UserProvider } from "@/context/UserContext";
+import { CartProvider } from "@/context/CartContext";
+import { WishlistProvider } from "@/context/WishlistContext";
 
 // Bebas Neue - Bold, fashion-forward headings (used by Nike, Adidas)
 const bebasNeue = Bebas_Neue({
@@ -35,9 +37,13 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${bebasNeue.variable} ${workSans.variable} antialiased`}>
         <UserProvider>
-          <Header />
-          {children}
-          <Footer />
+          <CartProvider>
+            <WishlistProvider>
+              <Header />
+              {children}
+              <Footer />
+            </WishlistProvider>
+          </CartProvider>
         </UserProvider>
       </body>
     </html>
