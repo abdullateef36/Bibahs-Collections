@@ -6,6 +6,7 @@ import { db } from "@/lib/firebase";
 import { useUser } from "@/context/UserContext";
 import { clothingService } from "@/lib/services/clothingService";
 import { jewelryService } from "@/lib/services/jewelryService";
+import { bagService } from "@/lib/services/bagService";
 
 interface CartItem {
   id: string;
@@ -13,7 +14,7 @@ interface CartItem {
   price: number;
   image: string;
   quantity: number;
-  type: "clothing" | "jewelry";
+  type: "clothing" | "jewelry" | "bags";
   available: boolean;
 }
 
@@ -80,6 +81,22 @@ export function CartProvider({ children }: { children: ReactNode }) {
                   image: jewelry.images?.[0] || "",
                   quantity: data.quantity,
                   type: "jewelry",
+                  available: true,
+                });
+                continue;
+              }
+            }
+
+            if (data.type === "bags") {
+              const bag = await bagService.getBag(data.id);
+              if (bag) {
+                items.push({
+                  id: bag.id,
+                  name: bag.name,
+                  price: bag.price,
+                  image: bag.images?.[0] || "",
+                  quantity: data.quantity,
+                  type: "bags",
                   available: true,
                 });
                 continue;

@@ -6,13 +6,14 @@ import { db } from "@/lib/firebase";
 import { useUser } from "@/context/UserContext";
 import { clothingService } from "@/lib/services/clothingService";
 import { jewelryService } from "@/lib/services/jewelryService";
+import { bagService } from "@/lib/services/bagService";
 
 interface WishlistItem {
   id: string;
   name: string;
   price: number;
   image: string;
-  type: "clothing" | "jewelry";
+  type: "clothing" | "jewelry" | "bags";
   available: boolean;
   addedAt: number;
 }
@@ -76,6 +77,22 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
                   price: jewelry.price,
                   image: jewelry.images?.[0] || "",
                   type: "jewelry",
+                  available: true,
+                  addedAt: data.addedAt || Date.now(),
+                });
+                continue;
+              }
+            }
+
+            if (data.type === "bags") {
+              const bag = await bagService.getBag(data.id);
+              if (bag) {
+                items.push({
+                  id: bag.id,
+                  name: bag.name,
+                  price: bag.price,
+                  image: bag.images?.[0] || "",
+                  type: "bags",
                   available: true,
                   addedAt: data.addedAt || Date.now(),
                 });

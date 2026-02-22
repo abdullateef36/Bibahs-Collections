@@ -17,6 +17,7 @@ const formatNaira = (amount: number): string =>
 const TYPE_LABELS: Record<string, string> = {
   clothing: "Clothing",
   jewelry: "Jewelry",
+  bags: "Bags",
 };
 
 export default function CartPage() {
