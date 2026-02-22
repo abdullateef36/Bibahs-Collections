@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowLeft, Trash2, ShoppingCart, Loader2 } from "lucide-react";
@@ -38,7 +39,12 @@ export default function WishlistPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0F0F0F] text-white">
+    <motion.div
+      className="min-h-screen bg-[#0F0F0F] text-white"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-24 space-y-6">
         <div className="flex items-center justify-between">
           <Link
@@ -71,7 +77,12 @@ export default function WishlistPage() {
             </Link>
           </div>
         ) : (
-          <div className="grid md:grid-cols-2 gap-6">
+          <motion.div
+            className="grid md:grid-cols-2 gap-6"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+          >
             {wishlist.map((item) => (
               <div
                 key={item.id}
@@ -109,9 +120,9 @@ export default function WishlistPage() {
                 </div>
               </div>
             ))}
-          </div>
+          </motion.div>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 }

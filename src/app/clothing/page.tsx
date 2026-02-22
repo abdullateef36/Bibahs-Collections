@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { useUser } from "@/context/UserContext";
 import { clothingService } from "@/lib/services/clothingService";
 import { Clothing, ClothingFormData } from "@/lib/types/clothing";
@@ -64,30 +65,35 @@ export default function ClothingPage() {
 
   return (
     <div className="min-h-screen bg-[#0F0F0F]">
-      <div className="relative overflow-hidden border-b border-white/10">
-        <div className="absolute inset-0 bg-linear-to-br from-[#FF9B9B]/10 via-transparent to-[#FFB8B8]/10" />
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6">
-            <div>
-              <p className="text-sm uppercase tracking-[0.3em] text-white/50">Bibah&apos;s Collections</p>
-              <h1 className="font-heading text-4xl sm:text-5xl text-white mt-2">Clothing</h1>
-              <p className="font-body text-white/60 mt-3 max-w-xl">
-                Curated pieces crafted for bold, elegant, and everyday statements.
-              </p>
-            </div>
+        <motion.div
+          className="relative overflow-hidden border-b border-white/10"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          <div className="absolute inset-0 bg-linear-to-br from-[#FF9B9B]/10 via-transparent to-[#FFB8B8]/10" />
+          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+            <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6">
+              <div>
+                <p className="text-sm uppercase tracking-[0.3em] text-white/50">Bibah&apos;s Collections</p>
+                <h1 className="font-heading text-4xl sm:text-5xl text-white mt-2">Clothing</h1>
+                <p className="font-body text-white/60 mt-3 max-w-xl">
+                  Curated pieces crafted for bold, elegant, and everyday statements.
+                </p>
+              </div>
 
-            {isAdmin && (
-              <button
-                onClick={() => setShowForm(true)}
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#FF9B9B] text-[#1A1A1A] font-semibold hover:bg-[#FFB8B8] transition-colors"
-              >
-                <Plus className="w-5 h-5" />
-                Add Clothing
-              </button>
-            )}
+              {isAdmin && (
+                <button
+                  onClick={() => setShowForm(true)}
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#FF9B9B] text-[#1A1A1A] font-semibold hover:bg-[#FFB8B8] transition-colors"
+                >
+                  <Plus className="w-5 h-5" />
+                  Add Clothing
+                </button>
+              )}
+            </div>
           </div>
-        </div>
-      </div>
+        </motion.div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         {loading && clothing.length === 0 && (
@@ -111,7 +117,12 @@ export default function ClothingPage() {
         )}
 
         {clothing.length > 0 && (
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 sm:gap-6">
+          <motion.div
+            className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 sm:gap-6"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+          >
             {clothing.map((item) => (
               <ClothingCard
                 key={item.id}
@@ -121,7 +132,7 @@ export default function ClothingPage() {
                 onDelete={handleDelete}
               />
             ))}
-          </div>
+          </motion.div>
         )}
       </div>
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -77,7 +78,12 @@ export default function ClothingDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0F0F0F] pt-24 sm:pt-28 lg:pt-32">
+    <motion.div
+      className="min-h-screen bg-[#0F0F0F] pt-24 sm:pt-28 lg:pt-32"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <Link
           href="/clothing"
@@ -87,9 +93,18 @@ export default function ClothingDetailPage() {
           Back to Clothing
         </Link>
 
-        <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-10">
+        <motion.div
+          className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-10"
+          initial="hidden"
+          animate="visible"
+          variants={{
+            hidden: { opacity: 0, y: 20 },
+            visible: { opacity: 1, y: 0 },
+          }}
+          transition={{ delay: 0.2 }}
+        >
           <div className="space-y-4">
-            <div className="relative aspect-[4/5] rounded-2xl overflow-hidden border border-white/10 bg-white/5">
+            <div className="relative aspect-4/5 rounded-2xl overflow-hidden border border-white/10 bg-white/5">
               {item.images?.[activeImage] ? (
                 <Image
                   src={item.images[activeImage]}
@@ -180,8 +195,8 @@ export default function ClothingDetailPage() {
               {item.unitsInStock > 0 ? `${item.unitsInStock} in stock` : "Out of stock"}
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
-    </div>
+    </motion.div>
   );
 }

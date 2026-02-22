@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowLeft, Minus, Plus, Trash2, Loader2 } from "lucide-react";
@@ -36,7 +37,12 @@ export default function CartPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0F0F0F] text-white overflow-hidden">
+    <motion.div
+      className="min-h-screen bg-[#0F0F0F] text-white overflow-hidden"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-24 space-y-6">
         <div className="flex items-center justify-between">
           <Link
@@ -69,7 +75,12 @@ export default function CartPage() {
             </Link>
           </div>
         ) : (
-          <div className="grid lg:grid-cols-[1fr_320px] gap-8">
+          <motion.div
+            className="grid lg:grid-cols-[1fr_320px] gap-8"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+          >
             <div className="space-y-4">
               {cart.map((item) => (
                 <div
@@ -130,7 +141,12 @@ export default function CartPage() {
               ))}
             </div>
 
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-4">
+            <motion.div
+              className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-4"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
               <div className="flex justify-between text-sm text-white/60">
                 <span>Subtotal</span>
                 <span>₦{formatNaira(cartTotal)}</span>
@@ -144,10 +160,10 @@ export default function CartPage() {
               >
                 Checkout (coming soon)
               </button>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 }
