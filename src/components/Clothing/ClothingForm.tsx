@@ -22,6 +22,9 @@ interface ClothingFormProps {
 export default function ClothingForm({ item, onSubmit, onCancel }: ClothingFormProps) {
   const [loading, setLoading] = useState(false);
   const [uploadingImages, setUploadingImages] = useState(false);
+  const fieldClass =
+    "w-full px-4 py-3 border border-white/20 rounded-lg focus:border-[#FF9B9B] focus:ring-4 focus:ring-[#FF9B9B]/20 outline-none text-white bg-white/10 placeholder:text-white/50 caret-white appearance-none transition duration-150";
+  const optionClass = "bg-[#0F0F0F] text-white/90";
   const [formData, setFormData] = useState<ClothingFormData>({
     name: "",
     brand: "",
@@ -134,26 +137,27 @@ export default function ClothingForm({ item, onSubmit, onCancel }: ClothingFormP
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 placeholder="Classic Hoodie"
-                className="w-full px-4 py-3 border border-white/10 rounded-lg focus:border-[#FF9B9B] focus:ring-4 focus:ring-[#FF9B9B]/20 outline-none text-white bg-white/5 placeholder:text-white/40"
+                className={fieldClass}
                 required
               />
             </div>
 
             <div>
               <label className="block text-sm font-semibold text-white/80 mb-2">Brand *</label>
-              <select
+              <input
+                type="text"
+                list="clothing-brand-options"
                 value={formData.brand}
                 onChange={(e) => setFormData({ ...formData, brand: e.target.value })}
-                className="w-full px-4 py-3 border border-white/10 rounded-lg focus:border-[#FF9B9B] focus:ring-4 focus:ring-[#FF9B9B]/20 outline-none text-white bg-white/5"
+                placeholder="Select or type a brand"
+                className={fieldClass}
                 required
-              >
-                <option value="">Select Brand</option>
+              />
+              <datalist id="clothing-brand-options">
                 {CLOTHING_BRANDS.map((brand) => (
-                  <option key={brand} value={brand}>
-                    {brand}
-                  </option>
+                  <option key={brand} value={brand} />
                 ))}
-              </select>
+              </datalist>
             </div>
 
             <div>
@@ -163,12 +167,14 @@ export default function ClothingForm({ item, onSubmit, onCancel }: ClothingFormP
               <select
                 value={formData.category}
                 onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                className="w-full px-4 py-3 border border-white/10 rounded-lg focus:border-[#FF9B9B] focus:ring-4 focus:ring-[#FF9B9B]/20 outline-none text-white bg-white/5"
+                className={fieldClass}
                 required
               >
-                <option value="">Select Category</option>
+                <option value="" className={optionClass}>
+                  Select Category
+                </option>
                 {CLOTHING_CATEGORIES.map((cat) => (
-                  <option key={cat} value={cat}>
+                  <option key={cat} value={cat} className={optionClass}>
                     {cat}
                   </option>
                 ))}
@@ -187,12 +193,18 @@ export default function ClothingForm({ item, onSubmit, onCancel }: ClothingFormP
                     condition: e.target.value as "new" | "refurbished" | "used",
                   })
                 }
-                className="w-full px-4 py-3 border border-white/10 rounded-lg focus:border-[#FF9B9B] focus:ring-4 focus:ring-[#FF9B9B]/20 outline-none text-white bg-white/5"
+                className={fieldClass}
                 required
               >
-                <option value="new">New</option>
-                <option value="refurbished">Refurbished</option>
-                <option value="used">Used</option>
+                <option value="new" className={optionClass}>
+                  New
+                </option>
+                <option value="refurbished" className={optionClass}>
+                  Refurbished
+                </option>
+                <option value="used" className={optionClass}>
+                  Used
+                </option>
               </select>
             </div>
 
@@ -205,7 +217,7 @@ export default function ClothingForm({ item, onSubmit, onCancel }: ClothingFormP
                 value={formData.price}
                 onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })}
                 placeholder="25000"
-                className="w-full px-4 py-3 border border-white/10 rounded-lg focus:border-[#FF9B9B] focus:ring-4 focus:ring-[#FF9B9B]/20 outline-none text-white bg-white/5 placeholder:text-white/40"
+                className={fieldClass}
                 required
                 min="0"
                 step="1"
@@ -223,7 +235,7 @@ export default function ClothingForm({ item, onSubmit, onCancel }: ClothingFormP
                   setFormData({ ...formData, originalPrice: Number(e.target.value) || undefined })
                 }
                 placeholder="30000"
-                className="w-full px-4 py-3 border border-white/10 rounded-lg focus:border-[#FF9B9B] focus:ring-4 focus:ring-[#FF9B9B]/20 outline-none text-white bg-white/5 placeholder:text-white/40"
+                className={fieldClass}
                 min="0"
                 step="1"
               />
@@ -240,7 +252,7 @@ export default function ClothingForm({ item, onSubmit, onCancel }: ClothingFormP
                   setFormData({ ...formData, unitsInStock: Number(e.target.value) })
                 }
                 placeholder="20"
-                className="w-full px-4 py-3 border border-white/10 rounded-lg focus:border-[#FF9B9B] focus:ring-4 focus:ring-[#FF9B9B]/20 outline-none text-white bg-white/5 placeholder:text-white/40"
+                className={fieldClass}
                 required
                 min="0"
               />
@@ -267,7 +279,7 @@ export default function ClothingForm({ item, onSubmit, onCancel }: ClothingFormP
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               placeholder="Describe the clothing item..."
-              className="w-full px-4 py-3 border border-white/10 rounded-lg focus:border-[#FF9B9B] focus:ring-4 focus:ring-[#FF9B9B]/20 outline-none text-white bg-white/5 placeholder:text-white/40"
+              className={fieldClass}
               rows={4}
               required
             />
@@ -288,12 +300,14 @@ export default function ClothingForm({ item, onSubmit, onCancel }: ClothingFormP
                       specifications: { ...formData.specifications, size: e.target.value },
                     })
                   }
-                  className="w-full px-4 py-3 border border-white/10 rounded-lg focus:border-[#FF9B9B] focus:ring-4 focus:ring-[#FF9B9B]/20 outline-none text-white bg-white/5"
+                  className={fieldClass}
                   required
                 >
-                  <option value="">Select Size</option>
+                  <option value="" className={optionClass}>
+                    Select Size
+                  </option>
                   {CLOTHING_SIZES.map((size) => (
-                    <option key={size} value={size}>
+                    <option key={size} value={size} className={optionClass}>
                       {size}
                     </option>
                   ))}
@@ -312,12 +326,14 @@ export default function ClothingForm({ item, onSubmit, onCancel }: ClothingFormP
                       specifications: { ...formData.specifications, fit: e.target.value },
                     })
                   }
-                  className="w-full px-4 py-3 border border-white/10 rounded-lg focus:border-[#FF9B9B] focus:ring-4 focus:ring-[#FF9B9B]/20 outline-none text-white bg-white/5"
+                  className={fieldClass}
                   required
                 >
-                  <option value="">Select Fit</option>
+                  <option value="" className={optionClass}>
+                    Select Fit
+                  </option>
                   {CLOTHING_FITS.map((fit) => (
-                    <option key={fit} value={fit}>
+                    <option key={fit} value={fit} className={optionClass}>
                       {fit}
                     </option>
                   ))}
@@ -328,75 +344,75 @@ export default function ClothingForm({ item, onSubmit, onCancel }: ClothingFormP
                 <label className="block text-sm font-semibold text-white/80 mb-2">
                   Color *
                 </label>
-                <input
-                  type="text"
-                  value={formData.specifications.color}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      specifications: { ...formData.specifications, color: e.target.value },
-                    })
-                  }
-                  placeholder="Black"
-                  className="w-full px-4 py-3 border border-white/10 rounded-lg focus:border-[#FF9B9B] focus:ring-4 focus:ring-[#FF9B9B]/20 outline-none text-white bg-white/5 placeholder:text-white/40"
-                  required
-                />
+              <input
+                type="text"
+                value={formData.specifications.color}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    specifications: { ...formData.specifications, color: e.target.value },
+                  })
+                }
+                placeholder="Black"
+                className={fieldClass}
+                required
+              />
               </div>
 
               <div>
                 <label className="block text-sm font-semibold text-white/80 mb-2">
                   Material *
                 </label>
-                <input
-                  type="text"
-                  value={formData.specifications.material}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      specifications: { ...formData.specifications, material: e.target.value },
-                    })
-                  }
-                  placeholder="Cotton Blend"
-                  className="w-full px-4 py-3 border border-white/10 rounded-lg focus:border-[#FF9B9B] focus:ring-4 focus:ring-[#FF9B9B]/20 outline-none text-white bg-white/5 placeholder:text-white/40"
-                  required
-                />
+              <input
+                type="text"
+                value={formData.specifications.material}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    specifications: { ...formData.specifications, material: e.target.value },
+                  })
+                }
+                placeholder="Cotton Blend"
+                className={fieldClass}
+                required
+              />
               </div>
 
               <div>
                 <label className="block text-sm font-semibold text-white/80 mb-2">
                   Gender
                 </label>
-                <input
-                  type="text"
-                  value={formData.specifications.gender || ""}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      specifications: { ...formData.specifications, gender: e.target.value },
-                    })
-                  }
-                  placeholder="Women / Men / Unisex"
-                  className="w-full px-4 py-3 border border-white/10 rounded-lg focus:border-[#FF9B9B] focus:ring-4 focus:ring-[#FF9B9B]/20 outline-none text-white bg-white/5 placeholder:text-white/40"
-                />
+              <input
+                type="text"
+                value={formData.specifications.gender || ""}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    specifications: { ...formData.specifications, gender: e.target.value },
+                  })
+                }
+                placeholder="Women / Men / Unisex"
+                className={fieldClass}
+              />
               </div>
 
               <div>
                 <label className="block text-sm font-semibold text-white/80 mb-2">
                   Care
                 </label>
-                <input
-                  type="text"
-                  value={formData.specifications.care || ""}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      specifications: { ...formData.specifications, care: e.target.value },
-                    })
-                  }
-                  placeholder="Machine wash cold"
-                  className="w-full px-4 py-3 border border-white/10 rounded-lg focus:border-[#FF9B9B] focus:ring-4 focus:ring-[#FF9B9B]/20 outline-none text-white bg-white/5 placeholder:text-white/40"
-                />
-              </div>
+              <input
+                type="text"
+                value={formData.specifications.care || ""}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    specifications: { ...formData.specifications, care: e.target.value },
+                  })
+                }
+                placeholder="Machine wash cold"
+                className={fieldClass}
+              />
+            </div>
             </div>
           </div>
 

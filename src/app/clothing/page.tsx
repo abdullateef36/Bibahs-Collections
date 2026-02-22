@@ -63,10 +63,10 @@ export default function ClothingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0F0F0F] pt-24 sm:pt-28 lg:pt-32">
+    <div className="min-h-screen bg-[#0F0F0F] pt-18 sm:pt-22 lg:pt-24">
       <div className="relative overflow-hidden border-b border-white/10">
         <div className="absolute inset-0 bg-linear-to-br from-[#FF9B9B]/10 via-transparent to-[#FFB8B8]/10" />
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6">
             <div>
               <p className="text-sm uppercase tracking-[0.3em] text-white/50">Bibah&apos;s Collections</p>

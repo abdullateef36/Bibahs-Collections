@@ -106,7 +106,7 @@ button:active {
   transform: translateY(0);
 }
 
-/* Inputs and forms */
+Inputs and forms
 input, textarea, select {
   border: 2px solid rgba(255, 155, 155, 0.3);
   border-radius: 0.5rem;
