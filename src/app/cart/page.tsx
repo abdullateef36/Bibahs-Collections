@@ -18,6 +18,7 @@ const TYPE_LABELS: Record<string, string> = {
   clothing: "Clothing",
   jewelry: "Jewelry",
   bags: "Bags",
+  shoes: "Shoes",
 };
 
 export default function CartPage() {

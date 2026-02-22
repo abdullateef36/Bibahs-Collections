@@ -7,6 +7,7 @@ import { useUser } from "@/context/UserContext";
 import { clothingService } from "@/lib/services/clothingService";
 import { jewelryService } from "@/lib/services/jewelryService";
 import { bagService } from "@/lib/services/bagService";
+import { shoeService } from "@/lib/services/shoeService";
 
 interface CartItem {
   id: string;
@@ -14,7 +15,7 @@ interface CartItem {
   price: number;
   image: string;
   quantity: number;
-  type: "clothing" | "jewelry" | "bags";
+  type: "clothing" | "jewelry" | "bags" | "shoes";
   available: boolean;
 }
 
@@ -97,6 +98,22 @@ export function CartProvider({ children }: { children: ReactNode }) {
                   image: bag.images?.[0] || "",
                   quantity: data.quantity,
                   type: "bags",
+                  available: true,
+                });
+                continue;
+              }
+            }
+
+            if (data.type === "shoes") {
+              const shoe = await shoeService.getShoe(data.id);
+              if (shoe) {
+                items.push({
+                  id: shoe.id,
+                  name: shoe.name,
+                  price: shoe.price,
+                  image: shoe.images?.[0] || "",
+                  quantity: data.quantity,
+                  type: "shoes",
                   available: true,
                 });
                 continue;

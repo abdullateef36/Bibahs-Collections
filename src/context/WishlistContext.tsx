@@ -7,13 +7,14 @@ import { useUser } from "@/context/UserContext";
 import { clothingService } from "@/lib/services/clothingService";
 import { jewelryService } from "@/lib/services/jewelryService";
 import { bagService } from "@/lib/services/bagService";
+import { shoeService } from "@/lib/services/shoeService";
 
 interface WishlistItem {
   id: string;
   name: string;
   price: number;
   image: string;
-  type: "clothing" | "jewelry" | "bags";
+  type: "clothing" | "jewelry" | "bags" | "shoes";
   available: boolean;
   addedAt: number;
 }
@@ -93,6 +94,22 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
                   price: bag.price,
                   image: bag.images?.[0] || "",
                   type: "bags",
+                  available: true,
+                  addedAt: data.addedAt || Date.now(),
+                });
+                continue;
+              }
+            }
+
+            if (data.type === "shoes") {
+              const shoe = await shoeService.getShoe(data.id);
+              if (shoe) {
+                items.push({
+                  id: shoe.id,
+                  name: shoe.name,
+                  price: shoe.price,
+                  image: shoe.images?.[0] || "",
+                  type: "shoes",
                   available: true,
                   addedAt: data.addedAt || Date.now(),
                 });
