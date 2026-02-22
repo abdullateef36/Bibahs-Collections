@@ -35,18 +35,14 @@ export default function Header() {
   const { wishlistCount } = useWishlist();
   const { current: notification, notify } = useNotification();
 
-          const activeLink = useMemo(() => {
-          if (!pathname) return null;
-
-          // Exact match for home
-          if (pathname === '/') return 'New Arrivals';
-
-          const match = navLinks.find(
-            (link) => link.href !== '/' && pathname.startsWith(link.href)
-          );
-
-          return match?.name ?? null;
-        }, [pathname]);
+  const activeLink = useMemo(() => {
+    if (!pathname) return null;
+    if (pathname === '/') return 'New Arrivals';
+    const match = navLinks.find(
+      (link) => link.href !== '/' && pathname.startsWith(link.href)
+    );
+    return match?.name ?? null;
+  }, [pathname]);
 
   const headerShadow = useTransform(
     scrollY,
@@ -169,20 +165,24 @@ export default function Header() {
             {/* Desktop Navigation */}
             <nav className="hidden lg:flex items-center space-x-10">
               {navLinks.map((link, index) => (
-                <motion.a
+                <motion.div
                   key={link.name}
-                  href={link.href}
-                  className={`relative font-body font-semibold text-base tracking-tight transition-all duration-300 ${
-                    activeLink === link.name
-                      ? 'text-[#FF9B9B]'
-                      : 'text-white/90 hover:text-[#FF9B9B]'
-                  }`}
+                  className="relative"
                   initial={{ opacity: 0, y: -20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.1 * index }}
                   whileHover={{ y: -2 }}
                 >
-                  {link.name}
+                  <Link
+                    href={link.href}
+                    className={`relative font-body font-semibold text-base tracking-tight transition-all duration-300 ${
+                      activeLink === link.name
+                        ? 'text-[#FF9B9B]'
+                        : 'text-white/90 hover:text-[#FF9B9B]'
+                    }`}
+                  >
+                    {link.name}
+                  </Link>
                   {activeLink === link.name && (
                     <motion.div
                       className="absolute -bottom-2 left-0 right-0 h-0.5 bg-linear-to-r from-[#FF9B9B] to-[#FFB8B8]"
@@ -192,7 +192,7 @@ export default function Header() {
                       transition={{ duration: 0.3 }}
                     />
                   )}
-                </motion.a>
+                </motion.div>
               ))}
             </nav>
 
@@ -209,9 +209,7 @@ export default function Header() {
                 <IconButton
                   icon={Search}
                   label="Search"
-                  onClick={() => {
-                    setIsSearchOpen(true);
-                  }}
+                  onClick={() => setIsSearchOpen(true)}
                 />
                 <IconButton
                   icon={Heart}
@@ -336,25 +334,28 @@ export default function Header() {
           <nav className="flex-1 px-6 py-8 overflow-y-auto">
             <div className="space-y-2">
               {navLinks.map((link, index) => (
-                <motion.a
+                <motion.div
                   key={link.name}
-                  href={link.href}
-                  className={`block px-4 py-4 rounded-xl font-body text-lg font-semibold transition-all ${
-                    activeLink === link.name
-                      ? 'text-[#FF9B9B] bg-[#FF9B9B]/10'
-                      : 'text-white hover:text-[#FF9B9B] hover:bg-white/5'
-                  }`}
                   initial={{ opacity: 0, x: 50 }}
                   animate={{
                     opacity: isMobileMenuOpen ? 1 : 0,
                     x: isMobileMenuOpen ? 0 : 50,
                   }}
                   transition={{ delay: 0.05 * index }}
-                  onClick={() => setIsMobileMenuOpen(false)}
                   whileTap={{ scale: 0.98 }}
                 >
-                  {link.name}
-                </motion.a>
+                  <Link
+                    href={link.href}
+                    className={`block px-4 py-4 rounded-xl font-body text-lg font-semibold transition-all ${
+                      activeLink === link.name
+                        ? 'text-[#FF9B9B] bg-[#FF9B9B]/10'
+                        : 'text-white hover:text-[#FF9B9B] hover:bg-white/5'
+                    }`}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    {link.name}
+                  </Link>
+                </motion.div>
               ))}
 
               {/* Search & Profile/Logout in menu */}
@@ -382,16 +383,19 @@ export default function Header() {
                       Logout
                     </motion.button>
                   ) : (
-                    <motion.a
-                      href="/login"
-                      className="flex items-center gap-3 px-4 py-4 rounded-xl font-body text-lg font-semibold text-white hover:text-[#FF9B9B] hover:bg-white/5 transition-all"
+                    <motion.div
                       animate={{ opacity: isMobileMenuOpen ? 1 : 0, x: isMobileMenuOpen ? 0 : 50 }}
                       transition={{ delay: 0.05 * (navLinks.length + 1) }}
-                      onClick={() => setIsMobileMenuOpen(false)}
                     >
-                      <User size={18} strokeWidth={1.8} />
-                      Sign In
-                    </motion.a>
+                      <Link
+                        href="/login"
+                        className="flex items-center gap-3 px-4 py-4 rounded-xl font-body text-lg font-semibold text-white hover:text-[#FF9B9B] hover:bg-white/5 transition-all"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        <User size={18} strokeWidth={1.8} />
+                        Sign In
+                      </Link>
+                    </motion.div>
                   )
                 )}
               </div>
@@ -426,7 +430,7 @@ function IconButton({
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
       >
-        <Link href={href} aria-label={label} className="block outline-none focus:outline-none">
+        <Link href={href} aria-label={label} onClick={onClick} className="block outline-none focus:outline-none">
           <Icon size={26} strokeWidth={1.6} />
         </Link>
         {badge ? (
