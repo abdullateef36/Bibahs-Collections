@@ -10,7 +10,6 @@ const footerLinks = {
     { label: 'Jewelry', href: '/jewelry' },
     { label: 'Bags', href: '/bags' },
     { label: 'Shoes', href: '/shoes' },
-    { label: 'Jewelry', href: '/jewelry' },
     { label: 'Perfumes', href: '/perfumes' },
   ],
   Help: [

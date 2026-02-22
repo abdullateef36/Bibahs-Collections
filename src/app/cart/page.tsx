@@ -14,6 +14,11 @@ const formatNaira = (amount: number): string =>
     maximumFractionDigits: 0,
   });
 
+const TYPE_LABELS: Record<string, string> = {
+  clothing: "Clothing",
+  jewelry: "Jewelry",
+};
+
 export default function CartPage() {
   const { user } = useUser();
   const { cart, cartTotal, updateQuantity, removeFromCart, loading } = useCart();
@@ -112,9 +117,9 @@ export default function CartPage() {
                       <div className="flex items-start justify-between gap-2">
                         <div className="min-w-0">
                           <p className="font-semibold text-lg leading-tight truncate">{item.name}</p>
-                          <p className="text-xs uppercase tracking-wide text-white/50 mt-0.5">
-                            {item.type ?? "Clothing"}
-                          </p>
+                      <p className="text-xs uppercase tracking-wide text-white/50 mt-0.5">
+                        {TYPE_LABELS[item.type] ?? item.type ?? "Item"}
+                      </p>
                         </div>
                         <button
                           onClick={() => handleRemove(item.id, item.name)}

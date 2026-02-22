@@ -5,6 +5,7 @@ import { collection, getDocs, writeBatch, doc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useUser } from "@/context/UserContext";
 import { clothingService } from "@/lib/services/clothingService";
+import { jewelryService } from "@/lib/services/jewelryService";
 
 interface CartItem {
   id: string;
@@ -12,7 +13,7 @@ interface CartItem {
   price: number;
   image: string;
   quantity: number;
-  type: "clothing";
+  type: "clothing" | "jewelry";
   available: boolean;
 }
 
@@ -68,6 +69,22 @@ export function CartProvider({ children }: { children: ReactNode }) {
                 continue;
               }
             }
+
+            if (data.type === "jewelry") {
+              const jewelry = await jewelryService.getJewelry(data.id);
+              if (jewelry) {
+                items.push({
+                  id: jewelry.id,
+                  name: jewelry.name,
+                  price: jewelry.price,
+                  image: jewelry.images?.[0] || "",
+                  quantity: data.quantity,
+                  type: "jewelry",
+                  available: true,
+                });
+                continue;
+              }
+            }
           } catch (error) {
             console.error("Error fetching cart item:", error);
           }
@@ -78,7 +95,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
             price: data.price,
             image: data.image,
             quantity: data.quantity,
-            type: data.type,
+            type: (data.type as CartItem["type"]) || "clothing",
             available: false,
           });
         }

@@ -5,13 +5,14 @@ import { collection, getDocs, writeBatch, doc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useUser } from "@/context/UserContext";
 import { clothingService } from "@/lib/services/clothingService";
+import { jewelryService } from "@/lib/services/jewelryService";
 
 interface WishlistItem {
   id: string;
   name: string;
   price: number;
   image: string;
-  type: "clothing";
+  type: "clothing" | "jewelry";
   available: boolean;
   addedAt: number;
 }
@@ -65,6 +66,22 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
                 continue;
               }
             }
+
+            if (data.type === "jewelry") {
+              const jewelry = await jewelryService.getJewelry(data.id);
+              if (jewelry) {
+                items.push({
+                  id: jewelry.id,
+                  name: jewelry.name,
+                  price: jewelry.price,
+                  image: jewelry.images?.[0] || "",
+                  type: "jewelry",
+                  available: true,
+                  addedAt: data.addedAt || Date.now(),
+                });
+                continue;
+              }
+            }
           } catch (error) {
             console.error("Error loading wishlist item:", error);
           }
@@ -74,7 +91,7 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
             name: data.name,
             price: data.price,
             image: data.image,
-            type: data.type,
+            type: (data.type as WishlistItem["type"]) || "clothing",
             available: false,
             addedAt: data.addedAt || Date.now(),
           });
