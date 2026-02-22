@@ -266,12 +266,13 @@ export default function Header() {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5, delay: 0.3 }}
               >
-                <MobileTopIcon icon={Heart} label="Wishlist" badge={wishlistCount} href="/wishlist" />
-                <MobileTopIcon icon={ShoppingCart} label="Cart" badge={cartCount} href="/cart" />
+                <MobileTopIcon icon={Heart} label="Wishlist" badge={wishlistCount} href="/wishlist" size={26} />
+                <MobileTopIcon icon={ShoppingCart} label="Cart" badge={cartCount} href="/cart" size={26} />
 
                 {/* Hamburger */}
                 <motion.button
-                  className="shrink-0 text-white hover:text-[#FF9B9B] transition-colors bg-transparent border-none cursor-pointer p-1 outline-none focus:outline-none"
+                  className="shrink-0 text-white hover:text-[#FF9B9B] transition-colors bg-transparent border-none cursor-pointer p-1 outline-none focus:outline-none appearance-none"
+                  style={{ WebkitAppearance: 'none', boxShadow: 'none' }}
                   onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                   whileTap={{ scale: 0.95 }}
                   aria-label="Toggle menu"
@@ -466,12 +467,14 @@ function MobileTopIcon({
   badge,
   onClick,
   href,
+  size = 20,
 }: {
   icon: LucideIcon;
   label: string;
   badge?: number;
   onClick?: () => void;
   href?: string;
+  size?: number;
 }) {
   if (href) {
     return (
@@ -480,7 +483,7 @@ function MobileTopIcon({
         whileTap={{ scale: 0.85 }}
       >
         <Link href={href} aria-label={label} className="block outline-none focus:outline-none">
-          <Icon size={20} strokeWidth={1.8} />
+          <Icon size={size} strokeWidth={1.8} />
         </Link>
         {badge ? (
           <span className="absolute top-0 right-0 bg-[#FF9B9B] text-[#1A1A1A] text-[9px] font-bold rounded-full w-3.5 h-3.5 flex items-center justify-center leading-none pointer-events-none">
@@ -498,7 +501,7 @@ function MobileTopIcon({
       aria-label={label}
       onClick={onClick}
     >
-      <Icon size={20} strokeWidth={1.8} />
+      <Icon size={size} strokeWidth={1.8} />
       {badge ? (
         <span className="absolute top-0 right-0 bg-[#FF9B9B] text-[#1A1A1A] text-[9px] font-bold rounded-full w-3.5 h-3.5 flex items-center justify-center leading-none pointer-events-none">
           {badge}
